@@ -118,7 +118,7 @@ def feature(raw_path, lines, out):
     x0 = 64; block = 96 + 40 + lh * len(lines); y0 = (H - block) // 2
     card(ic, 22, (x0, y0))
     wf = font(88, "Bold"); bb = d.textbbox((0, 0), "KuocKey", font=wf); tx0 = x0 + 96 + 26; ty = y0 + 48 - (bb[1] + bb[3]) / 2
-    d.text((tx0, ty), "Vi", font=wf, fill=INK); d.text((tx0 + d.textlength("Vi", font=wf), ty), "key", font=wf, fill=INDIGO)
+    d.text((tx0, ty), "Kuoc", font=wf, fill=INK); d.text((tx0 + d.textlength("Kuoc", font=wf), ty), "Key", font=wf, fill=INDIGO)
     y = y0 + 96 + 40
     for l in lines:
         assert x0 + d.textlength(l, font=lf) < kx - 24, l

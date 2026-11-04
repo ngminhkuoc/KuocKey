@@ -87,7 +87,7 @@ GtkWidget* tipTitle(const char* title, const char* tip) {
 }
 GtkWidget* wordmark(int px) {
     GtkWidget* l = gtk_label_new(nullptr);
-    char m[256]; snprintf(m, sizeof m, "<span weight=\"bold\" size=\"%dpt\">Vi<span foreground=\"%s\">key</span></span>", px * 3 / 4,
+    char m[256]; snprintf(m, sizeof m, "<span weight=\"bold\" size=\"%dpt\">Kuoc<span foreground=\"%s\">Key</span></span>", px * 3 / 4,
         adw_style_manager_get_dark(adw_style_manager_get_default()) ? "#8C87FF" : "#4F46E5");
     gtk_label_set_markup(GTK_LABEL(l), m); gtk_label_set_xalign(GTK_LABEL(l), 0); return l;
 }

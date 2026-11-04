@@ -23,7 +23,7 @@ GtkWidget* recorderNew(std::function<int()> get, std::function<void(int)> set, b
 void recorderRefresh(GtkWidget* recorder);
 /// A setting's title with a (?) that shows the tip (hover: tooltip, click: popover), like the Mac's Tip view.
 GtkWidget* tipTitle(const char* title, const char* tip);
-/// "Vi" + "key" in brand indigo, bold.
+/// "Kuoc" + "Key" in brand indigo, bold.
 GtkWidget* wordmark(int px);
 void openUri(const char* uri);
 void loadCss();
