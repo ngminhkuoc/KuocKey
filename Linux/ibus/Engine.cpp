@@ -1,4 +1,4 @@
-// ibus-engine-vikey: the IBus engine. Keys arrive in process_key_event, the core decides, and the
+// ibus-engine-kuockey: the IBus engine. Keys arrive in process_key_event, the core decides, and the
 // result goes back as deleted characters + committed text (no pre-edit: the text is typed straight into
 // the app, like on macOS and Windows), except in apps that never tell IBus the text around the cursor
 // (terminals, Zed, Ghostty, kitty): there the last words are kept as pre-edit until they are final (#24).
@@ -16,24 +16,23 @@
 #include <glob.h>
 #include "Core.h"
 #include "Prefs.h"
-#include "Crash.h"
 #include "KeyMap.h"
 #include "Surrounding.h"
-#ifdef VIKEY_HAVE_X11
+#ifdef KUOCKEY_HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #endif
-#ifndef VIKEY_VERSION
-#define VIKEY_VERSION "0.0.0"
+#ifndef KUOCKEY_VERSION
+#define KUOCKEY_VERSION "0.0.0"
 #endif
-using namespace vikey;
+using namespace kuockey;
 
-typedef struct { IBusEngine parent; guint caps; gboolean enabled; IBusPropList* props; IBusProperty *pLang, *pAuto, *pOpen, *pLog, *pGuide, *pUpdate, *pAbout; guint64 shown; } VikeyEngine;   // shown: what the panel has (0 = unknown)
-typedef struct { IBusEngineClass parent; } VikeyEngineClass;
-static GType vikey_engine_get_type();
-#define VIKEY_TYPE_ENGINE (vikey_engine_get_type())
-static VikeyEngine* _active = nullptr;   // the engine with the focus
+typedef struct { IBusEngine parent; guint caps; gboolean enabled; IBusPropList* props; IBusProperty *pLang, *pAuto, *pOpen, *pLog, *pGuide, *pAbout; guint64 shown; } KuocKeyEngine;   // shown: what the panel has (0 = unknown)
+typedef struct { IBusEngineClass parent; } KuocKeyEngineClass;
+static GType kuockey_engine_get_type();
+#define KUOCKEY_TYPE_ENGINE (kuockey_engine_get_type())
+static KuocKeyEngine* _active = nullptr;   // the engine with the focus
 static gint64 _lastOutputUs = 0;
 static bool _appPending = false;          // focus_in can come before X has moved the focus: re-check on the first key          // when we last let a key through or committed text (GTK resets the IM context right after inserting)
 static IBusBus* _bus = nullptr;
@@ -106,8 +105,8 @@ static void outControlKey(Uint16 key, bool shift) {
 // sound follows the key with no process start; a system bell when GStreamer can't play them.
 static GstElement* _player = nullptr;
 static void outSwitchSound(int language) {
-    std::string file = std::string(VIKEY_DATADIR) + "/sounds/" + (language == 1 ? "SwitchToVietnamese.wav" : "SwitchToEnglish.wav");
-    if (!_player) _player = gst_element_factory_make("playbin", "vikey-sound");
+    std::string file = std::string(KUOCKEY_DATADIR) + "/sounds/" + (language == 1 ? "SwitchToVietnamese.wav" : "SwitchToEnglish.wav");
+    if (!_player) _player = gst_element_factory_make("playbin", "kuockey-sound");
     if (_player && g_file_test(file.c_str(), G_FILE_TEST_EXISTS)) {
         gst_element_set_state(_player, GST_STATE_NULL);
         gchar* uri = g_filename_to_uri(file.c_str(), nullptr, nullptr); g_object_set(_player, "uri", uri, nullptr); g_free(uri);
@@ -117,7 +116,7 @@ static void outSwitchSound(int language) {
     g_spawn_async(nullptr, argv, nullptr, (GSpawnFlags)(G_SPAWN_SEARCH_PATH | G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL), nullptr, nullptr, nullptr, nullptr);
 }
 static void launchSettings(const char* arg, const char* arg2 = nullptr);
-// The emoji picker is a window of vikey-settings (--emoji). It takes the keyboard focus, so the engine sees a
+// The emoji picker is a window of kuockey-settings (--emoji). It takes the keyboard focus, so the engine sees a
 // focus_out; its choice comes back through the command file ("emoji 🐴") and is committed to the app once the
 // focus is back there. The picker uses GTK's simple input method (not IBus), so its own typing never reaches us.
 static std::string _pendingEmoji;
@@ -131,7 +130,7 @@ static void commitPendingEmoji() {
 
 // ---- the app in front (per-app memory): X11 / XWayland only -----------------------------------------
 static std::string frontAppX11() {
-#ifdef VIKEY_HAVE_X11
+#ifdef KUOCKEY_HAVE_X11
     static Display* d = nullptr; static bool tried = false;
     if (!d && !tried) {
         tried = true;
@@ -158,7 +157,7 @@ static std::string frontAppX11() {
 }
 
 // ---- panel properties (the "menu bar")
-static std::string hotkeyLabel() {   // "Alt+Z" (same names as vikey-settings)
+static std::string hotkeyLabel() {   // "Alt+Z" (same names as kuockey-settings)
     int hk = prefs::getInt("SwitchKeyStatus", 0); if (!hk) hk = 0x7A000206;
     static const struct { int k; const char* n; } N[] = {{0,"A"},{11,"B"},{8,"C"},{2,"D"},{14,"E"},{3,"F"},{5,"G"},{4,"H"},{34,"I"},{38,"J"},{40,"K"},{37,"L"},{46,"M"},{45,"N"},{31,"O"},{35,"P"},{12,"Q"},{15,"R"},{1,"S"},{17,"T"},{32,"U"},{9,"V"},{13,"W"},{7,"X"},{16,"Y"},{6,"Z"},
         {18,"1"},{19,"2"},{20,"3"},{21,"4"},{23,"5"},{22,"6"},{26,"7"},{28,"8"},{25,"9"},{29,"0"},{49,"Space"},{36,"Enter"},{48,"Tab"},{50,"`"},{27,"-"},{24,"="},{33,"["},{30,"]"},{42,"\\"},{41,";"},{39,"'"},{43,","},{47,"."},{44,"/"}};
@@ -168,7 +167,7 @@ static std::string hotkeyLabel() {   // "Alt+Z" (same names as vikey-settings)
 }
 /// Brings the panel's menu up to date. Runs after every key, so it only sends what changed: each update is a D-Bus
 /// round of messages to the panel, and two of them per key made typing heavier for the whole desktop.
-static void updateLangProp(VikeyEngine* e) {
+static void updateLangProp(KuocKeyEngine* e) {
     if (!e || !e->pLang) return;
     int vi = core::language();
     bool autoOn = prefs::getInt("AutoSwitchByTyping", 1) != 0, logOn = prefs::getInt("TypingLogEnabled", 0) != 0;
@@ -186,22 +185,21 @@ static void updateLangProp(VikeyEngine* e) {
     if (e->pLog && (bool)ibus_property_get_visible(e->pLog) != logOn) { ibus_property_set_visible(e->pLog, logOn); ibus_engine_update_property(IBUS_ENGINE(e), e->pLog); }
     if (e->pAuto && (was == 0 || ((now ^ was) & 2))) { ibus_property_set_state(e->pAuto, autoOn ? PROP_STATE_CHECKED : PROP_STATE_UNCHECKED); ibus_engine_update_property(IBUS_ENGINE(e), e->pAuto); }
 }
-static void buildProps(VikeyEngine* e) {
+static void buildProps(KuocKeyEngine* e) {
     e->props = ibus_prop_list_new(); g_object_ref_sink(e->props);
     e->pLang = ibus_property_new("lang", PROP_TYPE_TOGGLE, ibus_text_new_from_string("Tiếng Việt"), nullptr, ibus_text_new_from_string("Chuyển Anh/Việt (Alt+Z)"), TRUE, TRUE, PROP_STATE_CHECKED, nullptr);
     ibus_property_set_symbol(e->pLang, ibus_text_new_from_string("V"));
     e->pAuto = ibus_property_new("auto", PROP_TYPE_TOGGLE, ibus_text_new_from_string("Tự chuyển Anh/Việt"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_CHECKED, nullptr);
-    e->pOpen = ibus_property_new("open", PROP_TYPE_NORMAL, ibus_text_new_from_string("Mở Vikey…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
+    e->pOpen = ibus_property_new("open", PROP_TYPE_NORMAL, ibus_text_new_from_string("Mở KuocKey…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     e->pLog = ibus_property_new("log", PROP_TYPE_NORMAL, ibus_text_new_from_string("Xem nhật ký gõ…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     e->pGuide = ibus_property_new("guide", PROP_TYPE_NORMAL, ibus_text_new_from_string("Hướng dẫn…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
-    e->pUpdate = ibus_property_new("update", PROP_TYPE_NORMAL, ibus_text_new_from_string("Kiểm tra cập nhật…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
-    e->pAbout = ibus_property_new("about", PROP_TYPE_NORMAL, ibus_text_new_from_string("Giới thiệu Vikey"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
+    e->pAbout = ibus_property_new("about", PROP_TYPE_NORMAL, ibus_text_new_from_string("Giới thiệu KuocKey"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     // the Mac menu bar's order; the typing log is a debug item there (Gỡ lỗi), shown only while logging is on
     ibus_property_set_visible(e->pLog, prefs::getInt("TypingLogEnabled", 0) != 0);
-    for (IBusProperty* p : {e->pLang, e->pAuto, e->pOpen, e->pGuide, e->pUpdate, e->pAbout, e->pLog}) { g_object_ref_sink(p); ibus_prop_list_append(e->props, p); }
+    for (IBusProperty* p : {e->pLang, e->pAuto, e->pOpen, e->pGuide, e->pAbout, e->pLog}) { g_object_ref_sink(p); ibus_prop_list_append(e->props, p); }
 }
 static void launchSettings(const char* arg, const char* arg2) {
-    gchar* argv[] = {(gchar*)"vikey-settings", (gchar*)arg, (gchar*)arg2, nullptr};
+    gchar* argv[] = {(gchar*)"kuockey-settings", (gchar*)arg, (gchar*)arg2, nullptr};
     // the picker must not type through IBus (it reads raw keys for its search), the other windows must (the guide's practice fields)
     gchar** env = g_get_environ(); if (!strcmp(arg, "--emoji")) { env = g_environ_setenv(env, "GTK_IM_MODULE", "gtk-im-context-simple", TRUE); env = g_environ_setenv(env, "GDK_BACKEND", "x11", TRUE); }   // X11: the picker centres itself
     g_spawn_async(nullptr, argv, env, (GSpawnFlags)G_SPAWN_SEARCH_PATH, nullptr, nullptr, nullptr, nullptr); g_strfreev(env);
@@ -209,8 +207,8 @@ static void launchSettings(const char* arg, const char* arg2) {
 
 // ---- IBusEngine overrides --------------------------------------------------------------------------
 static unsigned flagsOf(guint state) { unsigned f = 0; if (state & IBUS_SHIFT_MASK) f |= core::F_SHIFT; if (state & IBUS_CONTROL_MASK) f |= core::F_CONTROL; if (state & IBUS_MOD1_MASK) f |= core::F_ALT; if (state & IBUS_SUPER_MASK) f |= core::F_WIN; if (state & IBUS_LOCK_MASK) f |= core::F_CAPS; return f; }
-static gboolean vikey_process_key_event(IBusEngine* engine, guint keyval, guint keycode, guint state) {
-    VikeyEngine* e = (VikeyEngine*)engine; _active = e;
+static gboolean kuockey_process_key_event(IBusEngine* engine, guint keyval, guint keycode, guint state) {
+    KuocKeyEngine* e = (KuocKeyEngine*)engine; _active = e;
     bool release = state & IBUS_RELEASE_MASK;
     if (!_surroundingSeen && !release) ibus_engine_get_surrounding_text(engine, nullptr, nullptr, nullptr);   // ask again until the field answers
     if (isModifierKeysym(keyval)) {
@@ -246,8 +244,8 @@ static gboolean vikey_process_key_event(IBusEngine* engine, guint keyval, guint 
     }
     return consumed ? TRUE : FALSE;
 }
-static void vikey_focus_in(IBusEngine* engine) {
-    VikeyEngine* e = (VikeyEngine*)engine; _active = e; _surroundingSeen = false; _reportedCursor = -1; _pre.clear();
+static void kuockey_focus_in(IBusEngine* engine) {
+    KuocKeyEngine* e = (KuocKeyEngine*)engine; _active = e; _surroundingSeen = false; _reportedCursor = -1; _pre.clear();
     ibus_engine_get_surrounding_text(engine, nullptr, nullptr, nullptr);   // asks this field to send its text (apps that can, do)
     ibus_engine_register_properties(engine, e->props);
     e->shown = 0;   // the panel took the list again: send everything once
@@ -257,38 +255,37 @@ static void vikey_focus_in(IBusEngine* engine) {
     updateLangProp(e);
     commitPendingEmoji();
 }
-static void vikey_focus_out(IBusEngine* engine) { _pre.clear(); core::click(); if (_active == (VikeyEngine*)engine) _active = nullptr; }   // the app keeps the pre-edit (COMMIT mode)
-static void vikey_reset(IBusEngine* engine) { if (!_pre.empty()) { _pre.clear(); core::click(); return; } if (g_get_monotonic_time() - _lastOutputUs < 300000) return; core::click(); }   // a reset with pre-edit: the app kept it (COMMIT mode) and the cursor moved   // a reset caused by our own key/commit is not a click
-static void vikey_enable(IBusEngine* engine) { VikeyEngine* e = (VikeyEngine*)engine; e->enabled = TRUE; ibus_engine_get_surrounding_text(engine, nullptr, nullptr, nullptr); }
-static void vikey_disable(IBusEngine* engine) { ((VikeyEngine*)engine)->enabled = FALSE; core::flushTypingLog(); }
-static void vikey_set_capabilities(IBusEngine* engine, guint caps) { ((VikeyEngine*)engine)->caps = caps; }
-static void vikey_set_surrounding_text(IBusEngine* engine, IBusText* text, guint cursor, guint anchor) {
-    if ((VikeyEngine*)engine == _active && !_surroundingSeen) { flushPre(); _surroundingSeen = true; }   // the app reports its text: direct mode from now on
-    if ((VikeyEngine*)engine == _active) _reportedCursor = (int)cursor;
+static void kuockey_focus_out(IBusEngine* engine) { _pre.clear(); core::click(); if (_active == (KuocKeyEngine*)engine) _active = nullptr; }   // the app keeps the pre-edit (COMMIT mode)
+static void kuockey_reset(IBusEngine* engine) { if (!_pre.empty()) { _pre.clear(); core::click(); return; } if (g_get_monotonic_time() - _lastOutputUs < 300000) return; core::click(); }   // a reset with pre-edit: the app kept it (COMMIT mode) and the cursor moved   // a reset caused by our own key/commit is not a click
+static void kuockey_enable(IBusEngine* engine) { KuocKeyEngine* e = (KuocKeyEngine*)engine; e->enabled = TRUE; ibus_engine_get_surrounding_text(engine, nullptr, nullptr, nullptr); }
+static void kuockey_disable(IBusEngine* engine) { ((KuocKeyEngine*)engine)->enabled = FALSE; core::flushTypingLog(); }
+static void kuockey_set_capabilities(IBusEngine* engine, guint caps) { ((KuocKeyEngine*)engine)->caps = caps; }
+static void kuockey_set_surrounding_text(IBusEngine* engine, IBusText* text, guint cursor, guint anchor) {
+    if ((KuocKeyEngine*)engine == _active && !_surroundingSeen) { flushPre(); _surroundingSeen = true; }   // the app reports its text: direct mode from now on
+    if ((KuocKeyEngine*)engine == _active) _reportedCursor = (int)cursor;
     if (_parentClass && _parentClass->set_surrounding_text) _parentClass->set_surrounding_text(engine, text, cursor, anchor);
 }
-static void vikey_property_activate(IBusEngine* engine, const gchar* name, guint state) {
-    VikeyEngine* e = (VikeyEngine*)engine;
+static void kuockey_property_activate(IBusEngine* engine, const gchar* name, guint state) {
+    KuocKeyEngine* e = (KuocKeyEngine*)engine;
     if (!strcmp(name, "lang")) core::setLanguageByUser(state == PROP_STATE_CHECKED ? 1 : 0);
     else if (!strcmp(name, "auto")) { prefs::setInt("AutoSwitchByTyping", state == PROP_STATE_CHECKED ? 1 : 0); core::reloadSettings(); }
     else if (!strcmp(name, "open")) launchSettings("");
     else if (!strcmp(name, "log")) launchSettings("--log");
     else if (!strcmp(name, "guide")) launchSettings("--guide");
-    else if (!strcmp(name, "update")) launchSettings("--check-update");
     else if (!strcmp(name, "about")) launchSettings("--about");
     updateLangProp(e);
 }
-static void vikey_engine_init(VikeyEngine* e) { e->caps = 0; e->enabled = FALSE; e->shown = 0; buildProps(e); }
-static void vikey_engine_class_init(VikeyEngineClass* klass) {
+static void kuockey_engine_init(KuocKeyEngine* e) { e->caps = 0; e->enabled = FALSE; e->shown = 0; buildProps(e); }
+static void kuockey_engine_class_init(KuocKeyEngineClass* klass) {
     IBusEngineClass* c = IBUS_ENGINE_CLASS(klass);
     _parentClass = IBUS_ENGINE_CLASS(g_type_class_peek_parent(klass));
-    c->set_surrounding_text = vikey_set_surrounding_text;
-    c->process_key_event = vikey_process_key_event; c->focus_in = vikey_focus_in; c->focus_out = vikey_focus_out; c->reset = vikey_reset;
-    c->enable = vikey_enable; c->disable = vikey_disable; c->set_capabilities = vikey_set_capabilities; c->property_activate = vikey_property_activate;
+    c->set_surrounding_text = kuockey_set_surrounding_text;
+    c->process_key_event = kuockey_process_key_event; c->focus_in = kuockey_focus_in; c->focus_out = kuockey_focus_out; c->reset = kuockey_reset;
+    c->enable = kuockey_enable; c->disable = kuockey_disable; c->set_capabilities = kuockey_set_capabilities; c->property_activate = kuockey_property_activate;
 }
-static GType vikey_engine_get_type() {
+static GType kuockey_engine_get_type() {
     static GType t = 0;
-    if (!t) { static const GTypeInfo info = {sizeof(VikeyEngineClass), nullptr, nullptr, (GClassInitFunc)vikey_engine_class_init, nullptr, nullptr, sizeof(VikeyEngine), 0, (GInstanceInitFunc)vikey_engine_init, nullptr}; t = g_type_register_static(IBUS_TYPE_ENGINE, "VikeyEngine", &info, (GTypeFlags)0); }
+    if (!t) { static const GTypeInfo info = {sizeof(KuocKeyEngineClass), nullptr, nullptr, (GClassInitFunc)kuockey_engine_class_init, nullptr, nullptr, sizeof(KuocKeyEngine), 0, (GInstanceInitFunc)kuockey_engine_init, nullptr}; t = g_type_register_static(IBUS_TYPE_ENGINE, "KuocKeyEngine", &info, (GTypeFlags)0); }
     return t;
 }
 
@@ -297,42 +294,28 @@ static GType vikey_engine_get_type() {
 static void readCommand() {
     std::string path = prefs::commandPath(); FILE* f = fopen(path.c_str(), "r"); if (!f) return;
     char line[256] = {0}; if (fgets(line, sizeof line, f)) { std::string l = line; while (!l.empty() && (l.back() == '\n' || l.back() == '\r')) l.pop_back();
-        if (l.rfind("crash-selftest", 0) == 0) { fclose(f); unlink(path.c_str()); crash::selfTest(l.size() > 15 ? l.substr(15) : ""); }   // testing: "crash-selftest [abort]"
         if (l.rfind("emoji ", 0) == 0) { _pendingEmoji = l.substr(6); commitPendingEmoji(); }   // committed now if the app already has the focus back, else at its focus_in
         else core::command(l); }
     fclose(f); unlink(path.c_str()); updateLangProp(_active);
 }
-// Auto update (Tự động cập nhật): once a day ask vikey-settings to compare vikey.app/release.json with this version
-// and show a notification when there is a newer one (the package manager does the install).
-static gboolean onUpdateTick(gpointer) {
-    if (!prefs::getInt("AutoUpdate", 1)) return TRUE;
-    long now = (long)time(nullptr); long last = prefs::getInt("LastUpdateCheck", 0);
-    if (now - last < 86400) return TRUE;
-    prefs::setInt("LastUpdateCheck", (int)now); launchSettings("--check-update", "--quiet"); return TRUE;
-}
 static void onSettingsChanged(GFileMonitor*, GFile* file, GFile*, GFileMonitorEvent ev, gpointer) {
     if (file) { char* b = g_file_get_basename(file); bool isCmd = b && !strcmp(b, "command"); g_free(b); if (isCmd) { if (ev == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT || ev == G_FILE_MONITOR_EVENT_MOVED_IN || ev == G_FILE_MONITOR_EVENT_RENAMED || ev == G_FILE_MONITOR_EVENT_CREATED) readCommand(); return; } } if (ev == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT || ev == G_FILE_MONITOR_EVENT_MOVED_IN || ev == G_FILE_MONITOR_EVENT_RENAMED || ev == G_FILE_MONITOR_EVENT_CREATED) { if (prefs::changedByOthers()) core::reloadSettings(); updateLangProp(_active); } }
-// After a crash (IBus has started the engine again): vikey-settings sends the report (CrashReportsAuto) or asks
-// first with a notification. Off the key path, a few seconds after start; the settings app marks it handled.
-static gboolean onCrashCheck(gpointer) { if (!crash::pending().empty()) launchSettings("--crash-report"); return G_SOURCE_REMOVE; }
 static gboolean onFlush(gpointer) { core::flushTypingLog(); return TRUE; }
 static void onBusDisconnected(IBusBus*, gpointer) { core::shutdown(); ibus_quit(); }
 
 int main(int argc, char** argv) {
     bool ibusMode = false; for (int i = 1; i < argc; i++) if (!strcmp(argv[i], "--ibus")) ibusMode = true;
-    crash::install(VIKEY_VERSION);   // first: a crash anywhere after this leaves a report
-    if (const char* t = getenv("VIKEY_CRASH_SELFTEST")) if (*t) crash::selfTest(t);   // testing: VIKEY_CRASH_SELFTEST=segv|abort
     ibus_init(); gst_init(nullptr, nullptr);
     core::init(core::Output{outBackspaces, outText, outControlKey, outSwitchSound, outOpenEmoji});
     _bus = ibus_bus_new();
-    if (!ibus_bus_is_connected(_bus)) { fprintf(stderr, "vikey: cannot connect to the IBus daemon\n"); return 1; }
+    if (!ibus_bus_is_connected(_bus)) { fprintf(stderr, "kuockey: cannot connect to the IBus daemon\n"); return 1; }
     g_signal_connect(_bus, "disconnected", G_CALLBACK(onBusDisconnected), nullptr);
     IBusFactory* factory = ibus_factory_new(ibus_bus_get_connection(_bus));
-    ibus_factory_add_engine(factory, "vikey", VIKEY_TYPE_ENGINE);
-    if (ibusMode) ibus_bus_request_name(_bus, "org.freedesktop.IBus.Vikey", 0);
+    ibus_factory_add_engine(factory, "kuockey", KUOCKEY_TYPE_ENGINE);
+    if (ibusMode) ibus_bus_request_name(_bus, "org.freedesktop.IBus.KuocKey", 0);
     else {   // run by hand (development): register the component ourselves
-        IBusComponent* c = ibus_component_new("org.freedesktop.IBus.Vikey", "Vikey", VIKEY_VERSION, "GPL-3.0", "Tony Dinh", "https://vikey.app", "", "ibus-vikey");
-        ibus_component_add_engine(c, ibus_engine_desc_new("vikey", "Vikey", "Vikey - Gõ tiếng Việt, tự chuyển Anh/Việt", "vi", "GPL-3.0", "Tony Dinh", "vikey", "us"));
+        IBusComponent* c = ibus_component_new("org.freedesktop.IBus.KuocKey", "KuocKey", KUOCKEY_VERSION, "GPL-3.0", "Tony Dinh, Quoc Nguyen", "https://kuockey.quocnguyen.dev", "", "ibus-kuockey");
+        ibus_component_add_engine(c, ibus_engine_desc_new("kuockey", "KuocKey", "KuocKey - Gõ tiếng Việt, tự chuyển Anh/Việt", "vi", "GPL-3.0", "Tony Dinh, Quoc Nguyen", "kuockey", "us"));
         ibus_bus_register_component(_bus, c);
     }
     GFile* dir = g_file_new_for_path(prefs::configDir().c_str()); g_mkdir_with_parents(prefs::configDir().c_str(), 0700);
@@ -341,8 +324,6 @@ int main(int argc, char** argv) {
     GFileMonitor* fmon = g_file_monitor_file(sf, G_FILE_MONITOR_WATCH_MOVES, nullptr, nullptr); if (fmon) g_signal_connect(fmon, "changed", G_CALLBACK(onSettingsChanged), nullptr);
     g_timeout_add(1000, [](gpointer) -> gboolean { core::pollSettingsFile(); readCommand(); return TRUE; }, nullptr);   // belt and braces: mtime poll + command file
     g_timeout_add_seconds(10, onFlush, nullptr);
-    g_timeout_add_seconds(8, onCrashCheck, nullptr);
-    g_timeout_add_seconds(90, [](gpointer) -> gboolean { onUpdateTick(nullptr); g_timeout_add_seconds(3600, onUpdateTick, nullptr); return FALSE; }, nullptr);
     ibus_main();
     core::shutdown();
     return 0;

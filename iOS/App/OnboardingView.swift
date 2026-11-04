@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Three steps: what Vikey does, add the keyboard in Settings, try it.
+/// Three steps: what KuocKey does, add the keyboard in Settings, try it.
 struct OnboardingView: View {
     var done: () -> Void
     @State private var page = startPage
@@ -49,7 +49,7 @@ struct OnboardingView: View {
                 .shadow(color: Color.brand.opacity(0.3), radius: 14, y: 6)
             VStack(spacing: 10) {
                 Text("Tự chuyển Anh/Việt\nkhi bạn gõ").font(.largeTitle.bold()).multilineTextAlignment(.center)
-                Text("Gõ tiếng Anh giữa câu tiếng Việt, Vikey tự sửa và chuyển chế độ cho bạn.")
+                Text("Gõ tiếng Anh giữa câu tiếng Việt, KuocKey tự sửa và chuyển chế độ cho bạn.")
                     .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
             }
             DemoCard().padding(.top, 8)
@@ -61,11 +61,11 @@ struct OnboardingView: View {
     private var addKeyboard: some View {
         VStack(alignment: .leading, spacing: 22) {
             Spacer()
-            Text("Thêm bàn phím Vikey").font(.largeTitle.bold())
+            Text("Thêm bàn phím KuocKey").font(.largeTitle.bold())
             VStack(alignment: .leading, spacing: 16) {
-                Step(n: 1, text: "Mở Cài đặt của Vikey")
+                Step(n: 1, text: "Mở Cài đặt của KuocKey")
                 Step(n: 2, text: "Chọn Bàn phím")
-                Step(n: 3, text: "Bật Vikey")
+                Step(n: 3, text: "Bật KuocKey")
                 Step(n: 4, text: "Bật Cho phép Truy cập đầy đủ để rung khi gõ (không bắt buộc)")
             }
             Button { KeyboardStatus.openSettings() } label: {
@@ -73,9 +73,9 @@ struct OnboardingView: View {
             }
             .buttonStyle(.bordered).tint(Color.brand)
             if added {
-                Label("Đã thêm Vikey", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.headline)
+                Label("Đã thêm KuocKey", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.headline)
             }
-            Text("Vikey chỉ dùng Truy cập đầy đủ để rung khi gõ phím. Bàn phím không kết nối mạng, những gì bạn gõ không rời khỏi máy.")
+            Text("KuocKey chỉ dùng Truy cập đầy đủ để rung khi gõ phím. Bàn phím không kết nối mạng, những gì bạn gõ không rời khỏi máy.")
                 .font(.footnote).foregroundStyle(.secondary)
             Spacer(); Spacer()
         }
@@ -87,7 +87,7 @@ struct OnboardingView: View {
         VStack(alignment: .leading, spacing: 18) {
             Spacer()
             Text("Thử ngay").font(.largeTitle.bold())
-            Text("Chạm vào ô bên dưới, giữ 🌐 để chọn Vikey, rồi gõ thử \"tooi ddi meeting nhes\".")
+            Text("Chạm vào ô bên dưới, giữ 🌐 để chọn KuocKey, rồi gõ thử \"tooi ddi meeting nhes\".")
                 .foregroundStyle(.secondary)
             TextField("Gõ ở đây", text: $sample, axis: .vertical)
                 .lineLimit(3...6)

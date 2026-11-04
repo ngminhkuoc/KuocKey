@@ -1,13 +1,13 @@
-# Vikey for Android
+# KuocKey for Android
 
-Gradle project for the Android keyboard (`app.vikey`). See `PLAN.md` for how it maps to the iOS keyboard and how
+Gradle project for the Android keyboard (`dev.quocnguyen.kuockey`). See `PLAN.md` for how it maps to the iOS keyboard and how
 to build, test and release. Quick start:
 
 ```sh
 source ~/.tools/android_env.sh          # JDK 21 + Android SDK/NDK paths (on the Mac mini)
 cd Android && ./gradlew assembleDebug   # app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell ime enable app.vikey/.ime.VikeyIME && adb shell ime set app.vikey/.ime.VikeyIME
+adb shell ime enable dev.quocnguyen.kuockey/.ime.KuocKeyIME && adb shell ime set dev.quocnguyen.kuockey/.ime.KuocKeyIME
 python3 Tests/livetest.py               # 14 typing cases through the real touch path
 ```
 

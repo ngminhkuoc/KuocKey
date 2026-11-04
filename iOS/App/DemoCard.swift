@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-/// The website's demo: a normal input method vs Vikey, typed key by key. The frames come from
+/// The website's demo: a normal input method vs KuocKey, typed key by key. The frames come from
 /// the real engine (Tools: gen_demo), so what it shows is what the keyboard does.
 struct DemoCard: View {
     struct Scene: Decodable { let start: Int; let frames: [[Frame]] }
@@ -17,7 +17,7 @@ struct DemoCard: View {
 
     @State private var scenes: [Scene] = []
     @State private var plain = ""
-    @State private var vikey = ""
+    @State private var kuockey = ""
     @State private var vietnamese = true
 
     var body: some View {
@@ -30,12 +30,12 @@ struct DemoCard: View {
                     .padding(.horizontal, 7).padding(.vertical, 3)
                     .background(vietnamese ? Color.brand : Color.gray, in: RoundedRectangle(cornerRadius: 5))
             }
-            Text(plain.isEmpty ? AttributedString(" ") : Self.marked(plain, against: vikey, good: false)).font(.title3).foregroundStyle(.secondary).lineLimit(1)
+            Text(plain.isEmpty ? AttributedString(" ") : Self.marked(plain, against: kuockey, good: false)).font(.title3).foregroundStyle(.secondary).lineLimit(1)
             HStack(spacing: 5) {   // the wordmark, like the website's demo
                 Image("Logo").resizable().frame(width: 15, height: 15).clipShape(RoundedRectangle(cornerRadius: 3.5, style: .continuous))
                 Wordmark(size: 13)
             }
-            Text(vikey.isEmpty ? AttributedString(" ") : Self.marked(vikey, against: plain, good: true)).font(.title2.weight(.semibold)).lineLimit(1)
+            Text(kuockey.isEmpty ? AttributedString(" ") : Self.marked(kuockey, against: plain, good: true)).font(.title2.weight(.semibold)).lineLimit(1)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -44,8 +44,8 @@ struct DemoCard: View {
         .task { await play() }
     }
 
-    /// Like the website: words where a normal keyboard and Vikey disagree are marked,
-    /// red with a dotted underline on the normal side, brand-tinted on the Vikey side.
+    /// Like the website: words where a normal keyboard and KuocKey disagree are marked,
+    /// red with a dotted underline on the normal side, brand-tinted on the KuocKey side.
     static func marked(_ a: String, against b: String, good: Bool) -> AttributedString {
         let wa = a.split(separator: " ", omittingEmptySubsequences: false), wb = b.split(separator: " ", omittingEmptySubsequences: false)
         var out = AttributedString()
@@ -73,10 +73,10 @@ struct DemoCard: View {
         scenes = s.shuffled()
         while !Task.isCancelled {
             for scene in scenes {
-                plain = ""; vikey = ""; vietnamese = scene.start == 1
+                plain = ""; kuockey = ""; vietnamese = scene.start == 1
                 try? await Task.sleep(nanoseconds: 500_000_000)
                 for f in scene.frames where f.count >= 4 {
-                    vikey = f[1].string; plain = f[3].string; vietnamese = f[2].int == 1
+                    kuockey = f[1].string; plain = f[3].string; vietnamese = f[2].int == 1
                     try? await Task.sleep(nanoseconds: UInt64((f[0].string == " " ? 0.16 : 0.07) * 1e9))
                 }
                 try? await Task.sleep(nanoseconds: 1_800_000_000)

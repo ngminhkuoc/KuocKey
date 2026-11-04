@@ -1,12 +1,10 @@
 # Acknowledgements
 
-Vikey is built on the code and data below. The app contains only word statistics counted from the data, never the text itself.
+KuocKey is built on the code and data below. The app contains only word statistics counted from the data, never the text itself.
 
 ## Code
 
 - [OpenKey](https://github.com/tuyenvm/OpenKey), Tuyen Mai (GPL-3.0)
-- [Sparkle](https://sparkle-project.org), Sparkle Project (MIT)
-- [TweetNaCl](https://tweetnacl.cr.yp.to), Daniel J. Bernstein et al. (public domain), Windows update signature check
 - [Inno Setup](https://jrsoftware.org/isinfo.php), Jordan Russell, Martijn Laan (Inno Setup License), Windows installer
 
 ## Word data (counted into the app)
@@ -18,7 +16,7 @@ Only frequency counts and word-pair counts are built in.
 - [HPLT v2](https://hplt-project.org), High Performance Language Technologies (CC0)
 - [MADLAD-400](https://huggingface.co/datasets/allenai/MADLAD-400), Google (ODC-By 1.0)
 - [Reddit comments](https://huggingface.co/datasets/tensorshield/reddit_dataset_157), tensorshield/reddit_dataset_157 (MIT)
-- [Vietnamese forums and reader comments](https://vikey.app/acknowledgements), VnExpress, Tuổi Trẻ, Tinhte, Otofun, Dạy Nhau Học (word statistics)
+- Vietnamese forums and reader comments, VnExpress, Tuổi Trẻ, Tinhte, Otofun, Dạy Nhau Học (word statistics)
 - [Emoji names and keywords (CLDR)](https://cldr.unicode.org), Unicode, Inc. (Unicode License v3)
 - [Emojibase](https://emojibase.dev), Miles Johnson (MIT)
 

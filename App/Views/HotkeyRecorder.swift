@@ -30,7 +30,7 @@ struct HotkeyRecorder: View {
             if event.type == .keyDown {
                 if event.keyCode == 53 && mods.isEmpty { stop(); return nil }   // Esc cancels
                 if allowModifiersOnly ? !mods.isEmpty : !mods.isDisjoint(with: [.control, .option, .command]) {   // emoji: ⇧ alone isn't enough, ⇧E would take every capital E
-                    raw = Hotkey(keyCode: Int(VikeyCore.hotkeyKeyCode(for: event)), modifiers: mods, beep: beep).raw
+                    raw = Hotkey(keyCode: Int(KuocKeyCore.hotkeyKeyCode(for: event)), modifiers: mods, beep: beep).raw
                     stop()
                 }
                 return nil

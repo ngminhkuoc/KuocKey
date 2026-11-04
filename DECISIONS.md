@@ -1,9 +1,15 @@
-# Vikey decisions log
+# KuocKey decisions log
 
-Product decisions for Vikey (tonyminibot/Vikey, based on OpenKey by Tuyen Mai), written as user stories.
+Product decisions for KuocKey (ngminhkuoc/KuocKey, forked from tonyminibot/Vikey, based on OpenKey by Tuyen Mai), written as user stories.
 Each entry records what was asked, what was decided, and its status. Newest first.
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
+
+## 60. No network connections
+
+**Status:** Agreed 2026-11-04 (offline fork).
+
+**Decided.** KuocKey makes no network connections on any platform. Removed: the auto-updaters (Sparkle on the Mac, the Windows and Linux update checks), the crash reporters, the "Gửi góp ý" (Send feedback) links and the feedback page, and the "notify me" email form on the website. The site has no server code any more (`site/functions` with `/api/crash`, `/api/feedback`, `/api/notify` is gone, along with its D1 database and R2 bucket bindings), no update feeds (`appcast.xml`, `release.json`) and no Turnstile script. Downloads link to GitHub Releases; users update by downloading a new version themselves. This supersedes D16 and the update and feedback parts of D43, D44, D45 and D46.
 
 ## 59. ":" and ";" after a space stay where they are (phone keyboards)
 
@@ -39,7 +45,7 @@ Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built
 
 **Status:** Agreed (2026-10-31), asked in #28.
 
-**Problem.** In Telex, a lone `[` types ơ and `]` types ư, so typing brackets takes two presses. OpenKey had two Simple Telex styles for this, which Vikey removed when it forked.
+**Problem.** In Telex, a lone `[` types ơ and `]` types ư, so typing brackets takes two presses. OpenKey had two Simple Telex styles for this, which KuocKey removed when it forked.
 
 **Decision.** A "Kiểu gõ" (typing style) setting on every platform, Telex by default:
 - **Telex:** as before. `[` gives ơ, `]` gives ư, a lone `w` gives ư.
@@ -54,7 +60,7 @@ Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built
 
 **Status:** Agreed (2026-10-31), in PR #27.
 
-**Decision.** Vikey ships an Arch Linux package (`.pkg.tar.zst`, x64 and ARM64) next to the .deb and .rpm. CI repacks it from the .deb, so the files are the same. The download page lists Arch as supported and shows an Arch button on the Linux card.
+**Decision.** KuocKey ships an Arch Linux package (`.pkg.tar.zst`, x64 and ARM64) next to the .deb and .rpm. CI repacks it from the .deb, so the files are the same. The download page lists Arch as supported and shows an Arch button on the Linux card.
 
 ---
 
@@ -159,9 +165,9 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 
 **Status:** Approved by Tony, 2026-10-30 (Telegram 247): "This is ok and approved." Do not raise these again.
 
-**Per-website memory.** Linux gives an input method no way to read the browser's address bar (no accessibility hook on Wayland, nothing in IBus). Vikey for Linux remembers the language per app only. Getting it would need a browser extension; not planned.
+**Per-website memory.** Linux gives an input method no way to read the browser's address bar (no accessibility hook on Wayland, nothing in IBus). KuocKey for Linux remembers the language per app only. Getting it would need a browser extension; not planned.
 
-**Automatic install of updates.** Installing silently needs root or an apt/dnf repository. Vikey for Linux checks vikey.app/release.json once a day and shows a notification with a link to the download page; the user installs the new .deb/.rpm.
+**Automatic install of updates.** Installing silently needs root or an apt/dnf repository. KuocKey for Linux does not check for updates (D60); the user installs the new .deb/.rpm from GitHub Releases.
 
 ---
 
@@ -171,11 +177,10 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 
 **Decided**
 
-- The Linux core (`Linux/ibus/Core.cpp`) follows `VikeyCore.mm` again: undo then type on (D32), digits start a word (D33), look forward (D35); D39/D41/D42 come with the shared engine. Live cases for each in `Linux/Tests/cases-linux.tsv`.
+- The Linux core (`Linux/ibus/Core.cpp`) follows `KuocKeyCore.mm` again: undo then type on (D32), digits start a word (D33), look forward (D35); D39/D41/D42 come with the shared engine. Live cases for each in `Linux/Tests/cases-linux.tsv`.
 - Switch sound: the Mac's two notes (`.caf` → `.wav`), played inside the engine with GStreamer, not the system bell.
-- Emoji picker: `vikey-settings --emoji`, a port of the Mac panel and its search (English, Vietnamese, Telex keys, Frequently Used, sections, arrows by row, Enter, Esc clears then closes, closes on click elsewhere). The engine opens it on the hotkey and types the choice into the app through the command file.
-- Guide (first run, menu "Hướng dẫn…"): the Mac's steps and copy; the Accessibility step becomes "add Vikey to the input sources", checked live on GNOME.
-- Menu "Kiểm tra cập nhật…" and a real "Tự động cập nhật" switch: a daily check of vikey.app/release.json with a notification; the user installs the package (no repo yet).
+- Emoji picker: `kuockey-settings --emoji`, a port of the Mac panel and its search (English, Vietnamese, Telex keys, Frequently Used, sections, arrows by row, Enter, Esc clears then closes, closes on click elsewhere). The engine opens it on the hotkey and types the choice into the app through the command file.
+- Guide (first run, menu "Hướng dẫn…"): the Mac's steps and copy; the Accessibility step becomes "add KuocKey to the input sources", checked live on GNOME.
 - "Ghi nhận" in About (the Mac list without Sparkle). Every row name and tip re-checked against MainView.swift.
 - Not matched: per-website memory (needs a browser extension), positioning the picker as a pure Wayland client (it runs on XWayland), installing updates by itself (`Linux/PLAN.md`).
 
@@ -188,27 +193,27 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 
 **Decided (Windows)**
 
-- The platform core (`Windows/App/Core.cpp`) has every VikeyCore.mm change since 1.0.14: Backspace undo then typing on (D32), digits start a word (D33), look forward (D35), the emoji hotkey, and the "sparkle" switch sound (the Mac's two .caf files as WAV resources). D39, D41 and D42 come with the shared engine. Live test: 23 cases (9 new, one per rule), all pass in the ARM64 VM.
+- The platform core (`Windows/App/Core.cpp`) has every KuocKeyCore.mm change since 1.0.14: Backspace undo then typing on (D32), digits start a word (D33), look forward (D35), the emoji hotkey, and the "sparkle" switch sound (the Mac's two .caf files as WAV resources). D39, D41 and D42 come with the shared engine. Live test: 23 cases (9 new, one per rule), all pass in the ARM64 VM.
 - Emoji picker: same search (English, Vietnamese, Telex keys, emoticons), same layout (Frequently Used first, sections, 9 columns), same keys. A popup that never takes the focus; the keyboard hook hands it the keys, so the app in front keeps its caret. Drawn with Direct2D/DirectWrite: GDI+ can't draw colour emoji. Country flags are left out: Windows' emoji font draws them as two letters.
-- Onboarding: the Mac's steps minus Accessibility (welcome with the Telex table, practice, hotkey + sound, emoji). Tray menu and About match the Mac (Hướng dẫn…, Gửi góp ý…, vikey.app · GitHub · Ghi nhận); Ghi nhận opens an Acknowledgements window (TweetNaCl and Inno Setup instead of Sparkle).
+- Onboarding: the Mac's steps minus Accessibility (welcome with the Telex table, practice, hotkey + sound, emoji). Tray menu and About match the Mac (Hướng dẫn…, vikey.app · GitHub · Ghi nhận); Ghi nhận opens an Acknowledgements window. (The "Gửi góp ý…" item was removed in D60.)
 - Windows open in the middle of the screen with the mouse. Settings rows are 34 px so the window, with the emoji rows, fits a 1366×768 screen.
-- No UI Automation polling while a Vikey window is in front: it stalled Vikey's UI thread for seconds.
+- No UI Automation polling while a KuocKey window is in front: it stalled KuocKey's UI thread for seconds.
 
 **Details:** `Windows/PLAN.md`.
 
 ---
-## 43. Vikey for Android
+## 43. KuocKey for Android
 
 **Status:** Built 2026-10-29 on branch `android` (release build signed, live test 14/14 on the emulator). Publishing waits for a try on Tony's phone.
 
-**User story.** As a Vikey user on Android, I want the same keyboard as on iPhone: Telex, auto switch, suggestions, auto-correct, emoji, in the same layout and with the same settings.
+**User story.** As a KuocKey user on Android, I want the same keyboard as on iPhone: Telex, auto switch, suggestions, auto-correct, emoji, in the same layout and with the same settings.
 
 **Decisions**
 
 - An `InputMethodService` with one Canvas-drawn keyboard view, not Compose: touches are handled by the view itself so fast two-thumb typing never loses a key, the same reason the iOS keyboard handles touches in one `UIView`.
-- Same engine, same driver: `Engine/` is built with the NDK; `vikey_jni.cpp` is the Android twin of `VKDriver.mm`, and the IME logic is a port of `KeyboardViewController.swift` (text context kept locally; one `getTextBeforeCursor` only when the app reports an outside change).
+- Same engine, same driver: `Engine/` is built with the NDK; `kuockey_jni.cpp` is the Android twin of `VKDriver.mm`, and the IME logic is a port of `KeyboardViewController.swift` (text context kept locally; one `getTextBeforeCursor` only when the app reports an outside change).
 - The keyboard owns its background and keeps the keys above the gesture bar (Android 15 edge-to-edge).
-- Haptics don't need a permission on Android, so "Rung khi gõ" is on without the Full Access step; the onboarding's step 4 is "switch to Vikey" instead.
+- Haptics don't need a permission on Android, so "Rung khi gõ" is on without the Full Access step; the onboarding's step 4 is "switch to KuocKey" instead.
 - Emoji: the device's font decides what is shown (`Paint.hasGlyph`) instead of an OS-version table.
 - Distribution: a signed APK on the GitHub release + vikey.app first (the download page already has the Android card); Google Play once the company account exists (D-U-N-S found, signup in progress, [[google-play-console]]).
 - Minimum Android 8.0 (API 26); arm64 + x86_64 (emulator) only.
@@ -258,17 +263,17 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 
 **Result.** Locked test unchanged: 99.88%, caps group 1.75%. Rules: D39 (2 cases).
 
-## 38. Vikey for Linux
+## 38. KuocKey for Linux
 
 **Status:** Shipped 2026-10-29 as part of 1.0.14 (branch `linux` → main), Phases 0–6 of `Linux/PLAN.md`.
 
-**User story.** As a Linux user, I want the same Vikey as on the Mac: same engine, same auto switch, same settings window.
+**User story.** As a Linux user, I want the same KuocKey as on the Mac: same engine, same auto switch, same settings window.
 
 **Decided**
 
-- Vikey is an **IBus engine** (`ibus-engine-vikey`): the only way to type in every app on X11 and Wayland. No pre-edit; text is committed straight, as on Mac/Windows.
+- KuocKey is an **IBus engine** (`ibus-engine-kuockey`): the only way to type in every app on X11 and Wayland. No pre-edit; text is committed straight, as on Mac/Windows.
 - Same engine, same rule lock on Linux CI (x64 + ARM64). The platform core (`Linux/ibus/Core.cpp`) is the Windows/macOS state machine with an output sink.
-- `vikey-settings` (GTK4 + libadwaita) mirrors the Mac window row by row; the IBus panel menu mirrors the menu bar. Settings in `~/.config/vikey/settings.json`; the engine watches it. Language switches go through a one-shot command file.
+- `kuockey-settings` (GTK4 + libadwaita) mirrors the Mac window row by row; the IBus panel menu mirrors the menu bar. Settings in `~/.config/kuockey/settings.json`; the engine watches it. Language switches go through a one-shot command file.
 - Per-app memory from the X11 focus window (XWayland apps only under Wayland). Per-website memory is not available (would need a browser extension). Auto update is left to the package manager (apt/dnf repo later).
 - Packages: .deb (Ubuntu/Debian) and .rpm (Fedora) from CPack, x64 + ARM64, published with `release.sh --linux`.
 
@@ -284,22 +289,22 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 
 **Decided.** Not shipped. Engine support stays, off unless counts are loaded (`vAutoSwitchSetCapitalised`, `SIM_CAP`).
 
-## 36. Vikey for Windows
+## 36. KuocKey for Windows
 
 **Status:** Agreed 2026-10-29, built on branch `windows` (Phases 0–5 of `Windows/PLAN.md` done); ships after the code-signing certificate arrives.
 
-**User story.** As a Windows user, I want the same Vikey as on the Mac: same engine, same auto switch, same settings window, same words.
+**User story.** As a Windows user, I want the same KuocKey as on the Mac: same engine, same auto switch, same settings window, same words.
 
 **Decided**
 
 - Same engine, byte for byte: the Windows app feeds keys to `Engine/` and applies its output; the Windows CI runs the same rule lock (`check.ps1`) on x64 and ARM64.
 - UI 1:1 with the Mac app (window, tray menu, onboarding, About, typing log), native Win32 + GDI+, no framework. Hotkey default Alt+Z.
 - Per-site memory reads the address bar through UI Automation (Chrome, Edge, Brave, Vivaldi, Opera, Firefox).
-- Per-user install (no admin prompt), Inno Setup, plus a portable zip. Auto update through the Mac appcast with Windows items, signed with the same EdDSA key.
+- Per-user install (no admin prompt), Inno Setup, plus a portable zip. No auto update (D60): new versions come from GitHub Releases.
 - Code signing with a Certum Open Source Code Signing certificate in Tony's name (individuals only); unsigned builds are not published.
 - Versions follow `project.yml` MARKETING_VERSION, released with `Tools/release/release.sh --windows <ver>` after the Mac release.
 
-**Verified.** 14 live typing cases pass in a Windows 11 VM on ARM64 and on the x64 build under emulation; update from a local appcast installs and relaunches.
+**Verified.** 14 live typing cases pass in a Windows 11 VM on ARM64 and on the x64 build under emulation.
 
 ---
 ## 35. Look forward: the next word can flip a word put back to English
@@ -375,9 +380,9 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 **Asked by Tony.** Tune against one set and keep another locked; "make sure we have a good mix in each, i don't want our engine to be tuned toward a specific topic/use-case".
 
 **Decided.**
-- Every test source is split 50/50 by message (md5 of the line, stable): `val` (tune against) and `test` (locked: only for reporting, never for choosing). 20% of our crawl leaves the counting text and is split between them. Built by `vikey-data/evalsets/build.py`; VietMix splits stay local.
+- Every test source is split 50/50 by message (md5 of the line, stable): `val` (tune against) and `test` (locked: only for reporting, never for choosing). 20% of our crawl leaves the counting text and is split between them. Built by `kuockey-data/evalsets/build.py`; VietMix splits stay local.
 - Groups: social/chat (synthetic chat, ViLexNorm, ViCTSD, VietMix, news/car-forum comments), tech (Tinhte, Viblo, tech forums), news (VnExpress), mixed (synthetic everyday), Vietnamese-only, English-only. The headline is the macro average: each group counts the same, whatever its size. All-caps typing is a guardrail reported beside it.
-- `vikey-data/evalsets/run.py val` is what tuning looks at; `run.py test` only for release numbers. check.sh's ViLexNorm auto-correct lock uses the val half.
+- `kuockey-data/evalsets/run.py val` is what tuning looks at; `run.py test` only for release numbers. check.sh's ViLexNorm auto-correct lock uses the val half.
 - Found and fixed a leak: the keep-list read the Tinhte test set. Web data is being filtered of test-set domains.
 - Baseline (current engine): val 99.85%, locked test 99.86% (macro, lazy typist). Groups (test): social 0.25%, tech 0.23%, news 0.08%, mixed 0.23%, Vietnamese-only 0.01%, English-only 0.03% wrong words; caps 2.70%.
 
@@ -388,7 +393,7 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 **Asked by Tony.** "we need about 10 times data both vietnamese and english"; "Early Switch: if we detect 3 words in a row that are clearly in VN/EN, switch right away".
 
 **Decided.**
-- 93M words of spam-filtered web Vietnamese (FineWeb-2 incl. a forum/chatty slice, HPLT 2, MADLAD-400; ODC-By/CC0; `vikey-data/bulk`) mixed half and half into the Vietnamese frequencies, lower-only like the chat crawl (D27). English used inside that Vietnamese text raises those English words. Lazy wrong words vs 1.0.13: chat 0.26 → 0.25%, everyday mixed 0.23 → 0.22%, Vietnamese-only 0.05 → 0.04%, VietMix 0.69 → 0.65%, others equal; fewer manual switches.
+- 93M words of spam-filtered web Vietnamese (FineWeb-2 incl. a forum/chatty slice, HPLT 2, MADLAD-400; ODC-By/CC0; `kuockey-data/bulk`) mixed half and half into the Vietnamese frequencies, lower-only like the chat crawl (D27). English used inside that Vietnamese text raises those English words. Lazy wrong words vs 1.0.13: chat 0.26 → 0.25%, everyday mixed 0.23 → 0.22%, Vietnamese-only 0.05 → 0.04%, VietMix 0.69 → 0.65%, others equal; fewer manual switches.
 - "aj", "ej", "oj", "ix" are not English words (subtitle junk): "aj" is ạ, also right after English ("esports ạ"). Contraction stems (didn, wasn…) are English.
 - **Early Switch rejected (Tony, after the numbers):** switching after 3 words that can only be one language. To-Vietnamese never fires (the first Vietnamese-only word already switches); to-English helped synthetic chat (0.23 → 0.21%) but broke real code-mixed text, where English phrases are followed by Vietnamese again ("predict stock price v ạ"): ViLexNorm 14 words broken, 0 fixed. Kept in the simulator only (`SIM_EARLY=N`).
 
@@ -399,7 +404,7 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 **Asked by Tony.** "see if anything we can improve (which can apply to both macOS + iOS app)" after the VietMix dataset (real Vietnamese–English code-mixed posts, held out).
 
 **Decided.**
-- Vietnamese word frequencies now mix the subtitles with 2.5M words of our own crawl of Vietnamese forums and comments (`vikey-data/freq/count_informal.py`, `build_dict.py`). Chat can only lower a formal-only syllable (vía, mêm) or add a chat word (ạ, đc, đt); it never raises a word the subtitles have ("lít", "thí" are common in car forums, but "list", "this" are what mixed typing means: raising them broke "This is" typed in VI mode).
+- Vietnamese word frequencies now mix the subtitles with 2.5M words of our own crawl of Vietnamese forums and comments (`kuockey-data/freq/count_informal.py`, `build_dict.py`). Chat can only lower a formal-only syllable (vía, mêm) or add a chat word (ạ, đc, đt); it never raises a word the subtitles have ("lít", "thí" are common in car forums, but "list", "this" are what mixed typing means: raising them broke "This is" typed in VI mode).
 - English words that Vietnamese chat uses get at least their in-chat frequency; "meme" added.
 - đ shorthand with no vowel (đ, đc, đt, đk) counts as Vietnamese.
 - Restoring a foreign word puts back the keys Telex undid on the way: "deepseek", not "deepsek" (only for 2+ vowel groups: "cuooocf" keeps the Telex undo).
@@ -424,7 +429,7 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 - Settings: "Gợi ý từ" and "Tự sửa lỗi gõ", both on by default. The strip only shows when one of them is on.
 - The strip is worked out after the key's text is sent, so it never delays typing.
 
-- Tested on real data (vikey-data/public, private): finger scatter calibrated on 60k real taps (Google TSI, Aalto): ~1.8 mm, i.e. 0.30 key width × 0.20 key height on iPhone; the model uses σ 0.35 × 0.25.
+- Tested on real data (kuockey-data/public, private): finger scatter calibrated on 60k real taps (Google TSI, Aalto): ~1.8 mm, i.e. 0.30 key width × 0.20 key height on iPhone; the model uses σ 0.35 × 0.25.
 - A keep-list of 16k words people really type (shorthand, teencode, slang, brands: ntn, cta, xog…), from 2.65M words of crawled Vietnamese forums/comments (`Engine/KeepWords.inc`, `Tools/autoswitch/keep/gen_inc.py`). Real social comments (ViLexNorm, held out): right words broken 0.17% → 0.06%.
 - A long non-word gets a rarer fix (floor −4 for 6+ letters): real English typos (GitHub Typo Corpus) fixed 15% → 33% ("occured", "funtion", "defualt").
 
@@ -458,7 +463,7 @@ If every listed change is intended, accept them with `Tools/autoswitch/check.sh 
 
 **Status:** Done 2026-10-28 (1.0.12). Rule cases D23.
 
-**Asked by Tony.** "Check and see if there is any easy win we can do to improve metrics." Found by ranking the wrong words on the new 1.8M-word test data (vikey-data).
+**Asked by Tony.** "Check and see if there is any easy win we can do to improve metrics." Found by ranking the wrong words on the new 1.8M-word test data (kuockey-data).
 
 **Decided.**
 - VN mode: a word with 2+ capitals that Telex turned into a rare (under ~3 per million) or invalid syllable is an acronym or a name: keys put back and English (NÁ → NAS, HĐ → HDD, ỐM → OSMO). Vietnamese acronyms where only đ changed stay (VĐV, HĐND, BĐS). A doubled tone key in a capitalized word keeps both presses (ASUS, not AUS).
@@ -550,13 +555,13 @@ Neighbors as the main signal made things worse (mixed text puts English nouns ne
 
 ## 16. Auto update
 
-**Status:** Done 2026-10-28 (1.0.4).
+**Status:** Removed 2026-11-04 (D60: no network connections). Was done 2026-10-28 (1.0.4); kept below as history.
 
 **Asked by Tony.** "Add auto update and check for update feature to the app."
 
 **Decided.**
-- Sparkle 2. Feed at vikey.app/appcast.xml, written by `release.sh`. Updates are EdDSA-signed; the private key is `~/.secrets/vikey_sparkle_ed25519`, the public key is in Info.plist.
-- On by default: checks daily, downloads in the background, installs when Vikey quits (or after the user confirms). The "Tự động cập nhật" toggle in the main window turns it off.
+- Sparkle 2. Feed at vikey.app/appcast.xml, written by `release.sh`. Updates are EdDSA-signed; the private key is `~/.secrets/kuockey_sparkle_ed25519`, the public key is in Info.plist.
+- On by default: checks daily, downloads in the background, installs when KuocKey quits (or after the user confirms). The "Tự động cập nhật" toggle in the main window turns it off.
 - Menu: "Kiểm tra cập nhật…" checks now and shows Sparkle's window (in Vietnamese).
 - Tested end to end with a local 1.0.5 test build: automatic install on quit, and the manual check → install → relaunch.
 
@@ -569,7 +574,7 @@ Neighbors as the main signal made things worse (mixed text puts English nouns ne
 **Decided.**
 - Per-site memory starts off. Turning it on reads the active tab of every running supported browser once, which shows macOS's Automation prompt right away. If the user refuses, the option turns back off and an alert links to System Settings › Automation.
 - Every setting in the main window has a (?) after its title: tooltip on hover, popover on click.
-- The Gỡ lỗi (typing log) menu is not in the menu bar icon's menu. It lives in the Vikey app menu (shown while a Vikey window is open), always visible there (Tony 2026-10-28).
+- The Gỡ lỗi (typing log) menu is not in the menu bar icon's menu. It lives in the KuocKey app menu (shown while a KuocKey window is open), always visible there (Tony 2026-10-28).
 
 ## 14. Quotes and apostrophes end a word
 
@@ -588,7 +593,7 @@ Neighbors as the main signal made things worse (mixed text puts English nouns ne
 
 **Asked by Tony.** "Can we detect this sooner? Ideally correct at 'thí makes'. Currently I type 'thí makes' and 'thí' is still not changed."
 
-**Rule (D13).** A word that looks the same in both modes but is English-only ("makes"), right after an ambiguous word that stayed Vietnamese ("thí", which reads as "this"), means the pair is English. Vikey switches at "makes" and fixes "thí" → "this".
+**Rule (D13).** A word that looks the same in both modes but is English-only ("makes"), right after an ambiguous word that stayed Vietnamese ("thí", which reads as "this"), means the pair is English. KuocKey switches at "makes" and fixes "thí" → "this".
 - It fires only when the immediately preceding word is ambiguous and its English reading is at least AS_PLAIN_MARGIN = 15 points (about 30×) more common than its Vietnamese one. "this" vs "thí" clears that by 20.
 
 **Measured**
@@ -627,14 +632,14 @@ Neighbors as the main signal made things worse (mixed text puts English nouns ne
 - **Typing log off by default.** With the log off, nothing is counted or recorded: every log entry point returns immediately, so the log costs nothing on the typing path.
 - **Where it lives now:** the menu bar submenu "Gỡ lỗi" → "Ghi nhật ký gõ" turns it on. "Xem nhật ký gõ…" opens the window and is disabled while logging is off. The main window no longer has a log row.
 - **Website:** every mention is removed (changelog, FAQ, privacy). The README documents it under "Debug typing log".
-- **Credits:** the main window footer is gone. The standard About panel ("Giới thiệu Vikey" in the menu) shows Tony Dinh, the OpenKey/Tuyen Mai credit, GPL-3.0, and links to vikey.app and GitHub. The Info.plist copyright is "© 2026 Tony Dinh".
+- **Credits:** the main window footer is gone. The standard About panel ("Giới thiệu KuocKey" in the menu) shows Tony Dinh, the OpenKey/Tuyen Mai credit, GPL-3.0, and links to vikey.app and GitHub. The Info.plist copyright is "© 2026 Tony Dinh".
 - **Repo:** the GitHub repo's website is set to https://vikey.app.
 
 ---
 
 ## 11. vikey.app, open-source release, compact window
 
-**Status:** Done 2026-10-28. Vikey 1.0.0 is public at https://vikey.app and on GitHub Releases.
+**Status:** Done 2026-10-28. KuocKey 1.0.0 is public at https://vikey.app and on GitHub Releases.
 
 **Asked by Tony.**
 - Buy vikey.app and make a free, open-source website like clipaudit.app.
@@ -646,38 +651,37 @@ Neighbors as the main signal made things worse (mixed text puts English nouns ne
 **Decisions**
 
 - **Domain.** vikey.app was registered on the Cloudflare dedicated account ($8.20; renews at $14.20).
-  - Hosting: Pages project "vikey".
+  - Hosting: Pages project "kuockey".
   - www redirects to the apex with a 301.
   - Always-HTTPS is on.
 - **Website.** Vietnamese, ClipAudit's layout and style, indigo.
-  - **Home hero:** the typing demo is replayed from frames that the real engine produced key by key (`harness frames`), so the site shows exactly what Vikey does.
+  - **Home hero:** the typing demo is replayed from frames that the real engine produced key by key (`harness frames`), so the site shows exactly what KuocKey does.
   - **Screenshots:** 2x, taken on a BetterDisplay HiDPI virtual screen.
   - **Pages:** download (DMG plus checksum), changelog, FAQ, privacy.
   - **Copy review:** reviewed by a subagent (avoid-AI-writing and copywriting rules). That fixed two factual errors: keystroke logging is on by default, and Firefox has no per-site memory.
-  - **Phones:** the download button leads to /download, which explains that Vikey is for Mac.
+  - **Phones:** the download button leads to /download, which explains that KuocKey is for Mac.
 - **Release.** `Tools/release/release.sh <version>` runs:
   1. bump the version;
   2. the engine rule lock;
   3. a universal build (arm64 + x86_64);
   4. sign and notarize the app;
   5. build the DMG (signed, notarized, stapled);
-  6. site/downloads and release.json;
-  7. the GitHub Release;
-  8. deploy.
+  6. the GitHub Release (the only place downloads live, since D60);
+  7. deploy the static site.
 - **App.**
   - **Window:** one compact window (460 points wide): a language switch on top, then hotkey, auto-switch, typing settings and launch at login, with an author/credit footer.
   - **History:** the typing history opens in its own window.
-  - **Reopening:** reopening Vikey shows the main window, and opening it by hand also shows the window.
+  - **Reopening:** reopening KuocKey shows the main window, and opening it by hand also shows the window.
 - **Bug found while taking screenshots.** Letting the window track the SwiftUI content size live crashed AppKit's constraint pass on a HiDPI (Retina) screen. The window is now sized once from the content.
 
 ---
 
-## 10. Vikey: new name, new app, fewer features
+## 10. KuocKey: new name, new app, fewer features
 
 **Status:** In progress 2026-10-28.
 
 **Asked by Tony.**
-- "I want to make this official. Let's call this project Vikey."
+- "I want to make this official. Let's call this project KuocKey."
 - Rename everything, including the repo and package name.
 - Rebuild the UI in modern SwiftUI.
 - Remove VNI.
@@ -689,9 +693,9 @@ He approved Otto's suggested cuts and added: "gõ tắt: remove".
 
 - **Name.**
   - Repo: tonyminibot/Vikey.
-  - App: Vikey.
-  - Bundle ID: com.devuap.vikey.
-  - Core: VikeyCore.
+  - App: KuocKey.
+  - Bundle ID: dev.quocnguyen.kuockey.
+  - Core: KuocKeyCore.
   - Credit: "based on OpenKey by Tuyen Mai" is kept in the About screen, the file headers and the README, as GPL-3.0 requires.
 - **Kept**
   - Telex, with modern or classic tone placement.
@@ -720,7 +724,7 @@ He approved Otto's suggested cuts and added: "gõ tắt: remove".
 - **New app.**
   - SwiftUI menu bar app (MenuBarExtra, macOS 13+), generated with xcodegen.
   - Settings window: General, Typing, Auto switch, About.
-  - Accessibility onboarding that starts Vikey as soon as permission is granted.
+  - Accessibility onboarding that starts KuocKey as soon as permission is granted.
   - Typing-log window and hotkey recorder.
   - SMAppService for launch at login.
   - OpenKey's settings, per-app/per-site memory and typing log are migrated on first launch.
@@ -810,9 +814,9 @@ With no manual switching at all, wrong words go 9.8% → 1.2% (chat) and 3.2% �
 
 **Status:** Built 2026-10-28 and sent as OpenKey-2.0.4-log. Tony uses it and sends the log for tuning.
 
-**User story.** As the user, I want Vikey to record how often I switch language by hand versus how often it switches for me, plus what I typed, so the engine can be tuned. The goal is the fewest manual switches.
+**User story.** As the user, I want KuocKey to record how often I switch language by hand versus how often it switches for me, plus what I typed, so the engine can be tuned. The goal is the fewest manual switches.
 
-**What is recorded.** The log is `~/Library/Application Support/Vikey/typing-log.jsonl`, one JSON object per line. The file is user-only (0600) and rotates at 20 MB, keeping one old file.
+**What is recorded.** The log is `~/Library/Application Support/KuocKey/typing-log.jsonl`, one JSON object per line. The file is user-only (0600) and rotates at 20 MB, keeping one old file.
 
 | Event | When | Fields |
 |---|---|---|
@@ -868,7 +872,7 @@ Word recording can be turned off in the log window. Nothing leaves the Mac; Tony
 
 **Status:** Built 2026-10-28 and sent as OpenKey-2.0.4-autoswitch. Tony is testing.
 
-**User story.** As someone who types Vietnamese and English all day, I want Vikey to notice when I'm typing in the wrong mode and switch for me, so I rarely press the switch hotkey.
+**User story.** As someone who types Vietnamese and English all day, I want KuocKey to notice when I'm typing in the wrong mode and switch for me, so I rarely press the switch hotkey.
 
 ### Tony's rules (2026-10-28)
 
@@ -968,7 +972,7 @@ Word recording can be turned off in the log window. Nothing leaves the Mac; Tony
 
 **Status:** Shipped, commit d755b50. Tony is testing on his MacBook for a few weeks from 2026-10-27.
 
-**User story.** As a daily user, I want Vikey to keep working without quitting and reopening it.
+**User story.** As a daily user, I want KuocKey to keep working without quitting and reopening it.
 
 **Cause.** macOS disables the event tap when it times out or on user input (a slow Mac, secure input), and the app never turned it back on.
 

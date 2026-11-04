@@ -130,7 +130,7 @@ private enum Impl {
         let s = LanguageModelSession(instructions: proofreadRules)
         let r: LanguageModelSession.Response<String>
         do { r = try await s.respond(to: "Proofread this text. Reply with the corrected text only.\n\nText:\n<<<\n\(text)\n>>>", options: GenerationOptions(sampling: .greedy)) }
-        catch { NSLog("VikeyAI proofread failed: %@", String(describing: error)); return nil }
+        catch { NSLog("KuocKeyAI proofread failed: %@", String(describing: error)); return nil }
         let out = r.content.trimmingCharacters(in: .whitespacesAndNewlines)
         return out.isEmpty ? nil : out
     }

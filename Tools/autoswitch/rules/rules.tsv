@@ -1,5 +1,5 @@
 # Engine rules, each pinned to the decision in DECISIONS.md that created it.
-# Tests run with Vikey's app defaults (spell check on, restore-if-invalid on, modern tone placement).
+# Tests run with KuocKey's app defaults (spell check on, restore-if-invalid on, modern tone placement).
 # rule	start(1=VN,0=EN)	keys ('<'=Backspace, '|'=Enter)	expected text	final lang	why
 D5.1	1	err	err	0	doubled tone key in VN mode switches to English (both letters stay: err is a word, D19)
 D5.1	1	boss 	boss 	0	doubled tone key keeps both letters

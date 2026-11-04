@@ -1,4 +1,4 @@
-# Contributing to Vikey
+# Contributing to KuocKey
 
 Thanks for helping. Bug fixes, new features and new platforms are all welcome.
 
@@ -23,7 +23,7 @@ understand the change and have tested it yourself, the same as code you typed by
 | Area | Add cases to | Run |
 |---|---|---|
 | Typing rules (Telex, auto switch, spelling) | `Tools/autoswitch/rules/rules.tsv`, and a decision in `DECISIONS.md` for a new rule | `Tools/autoswitch/check.sh` |
-| iOS keyboard | `iOS/Tests/` | `cd iOS && xcodegen generate && xcodebuild test -project VikeyiOS.xcodeproj -scheme Vikey -destination 'platform=iOS Simulator,name=iPhone 17'` |
+| iOS keyboard | `iOS/Tests/` | `cd iOS && xcodegen generate && xcodebuild test -project KuocKeyiOS.xcodeproj -scheme KuocKey -destination 'platform=iOS Simulator,name=iPhone 17'` |
 | Android keyboard | `Android/Tests/` | see `Android/README.md` |
 | Linux | `Linux/Tests/` | `bash Linux/check.sh` |
 | Windows | `Windows/Tests/` | `pwsh Windows/check.ps1` |
@@ -36,4 +36,6 @@ results changed and why.
 
 - The tests for the parts you touched pass on your machine (CI runs them too).
 - No secrets, keys or personal data in the code or the screenshots.
-- Vikey is GPL-3.0. By contributing, you agree your code is released under the same license.
+- No network access in the apps. KuocKey makes no network connections (no update checks, crash reports, feedback
+  uploads or analytics); a pull request that adds one is not merged.
+- KuocKey is GPL-3.0. By contributing, you agree your code is released under the same license.

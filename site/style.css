@@ -114,21 +114,6 @@ body.lb-open{overflow:hidden}
 @media(max-width:900px),(pointer:coarse){.dl-mac{display:none}.dl-send{display:inline-flex}}
 .prose pre.lic{white-space:pre-wrap;font:14px/1.6 "SF Mono",Menlo,monospace;background:#f6f8fb;border:1px solid var(--line);border-radius:12px;padding:22px}
 /* send-link modal */
-.sendbox{border:0;border-radius:18px;padding:0;max-width:440px;width:calc(100% - 32px);box-shadow:0 40px 100px rgba(10,20,40,.35);background:#fff}
-.sendbox::backdrop{background:rgba(10,14,24,.55);backdrop-filter:blur(4px)}
-.sendbox-in{padding:28px 28px 24px;position:relative;display:grid;gap:12px}
-.sendbox h3{margin:0 0 2px;font-size:22px;letter-spacing:-.02em}.sendbox .muted{margin:0;font-size:14px}
-.sendbox label{font-size:13px;font-weight:600;margin-top:6px}
-.sendbox input[type=email]{padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:16px;width:100%}
-.sendbox .x{position:absolute;top:10px;right:12px;background:none;border:0;font-size:26px;line-height:1;color:var(--muted);cursor:pointer}
-.sendbox .btn.big{justify-content:center;margin-top:4px;width:100%}
-.sendbox .err{color:#c0262d;margin:0;min-height:1em}
-.sendbox .steps{margin:4px 0 0;padding-left:20px;display:grid;gap:8px}.sendbox .steps li{list-style:decimal;padding-left:0}.sendbox .steps li::before{content:none}
-.sendbox .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.sendbox .sent{text-align:center;display:grid;gap:10px;justify-items:center;padding-top:6px}
-.sendbox .sent .tick{width:56px;height:56px;border-radius:50%;background:#e8f7ef;color:#1f9d57;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.sendbox .sent h3{margin:4px 0 0}.sendbox .sent .muted{line-height:1.5;max-width:320px}
-.sendbox .sent .btn.big{margin-top:8px}
 .gallery{padding-top:56px;padding-bottom:80px}.gallery h1{font-size:clamp(28px,3.2vw,40px);font-weight:800}
 .gallery section{padding:0;margin-top:56px}.gallery h2{font-size:20px;margin-bottom:18px}
 .gallery .g{display:grid;gap:32px 28px;align-items:start}.gallery .wide{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery .tall3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -269,16 +254,16 @@ h1 span{white-space:nowrap}
 .demo .keys{display:block;font-size:14px;height:38px;line-height:22px;background:#f1f3f7;padding:8px 12px;border-radius:8px;white-space:pre;overflow:hidden}
 .demo .txt{height:34px;line-height:34px;white-space:pre;overflow:hidden}
 .demo .plain .txt{font-size:18px;color:#8a92a0}
-.demo .vikey .txt{font-size:23px;font-weight:700;color:var(--ink)}
+.demo .kuockey .txt{font-size:23px;font-weight:700;color:var(--ink)}
 .demo mark{background:none;color:inherit;border-radius:4px;padding:0 2px;margin:0 -2px}
 .demo mark.bad{color:#d14343;text-decoration:underline wavy #d14343;text-decoration-thickness:1.5px;text-underline-offset:4px}
 .demo mark.good{background:#e9e8ff;color:var(--blue)}
 .caret{display:inline-block;width:2px;height:1.05em;background:var(--blue);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 @media(max-width:1100px) and (min-width:901px){.stage .pop{width:360px}.stage{height:560px}}
-@media(max-width:900px){.stage{height:auto;display:flex;flex-direction:column-reverse;gap:24px}.stage .pop,.stage .demo{position:static;width:100%;transform:none}.stage .pop{width:min(320px,82%);margin:0 auto}.demo .vikey .txt{font-size:19px}.demo .plain .txt{font-size:15px}.demo .keys{font-size:12px}}
+@media(max-width:900px){.stage{height:auto;display:flex;flex-direction:column-reverse;gap:24px}.stage .pop,.stage .demo{position:static;width:100%;transform:none}.stage .pop{width:min(320px,82%);margin:0 auto}.demo .kuockey .txt{font-size:19px}.demo .plain .txt{font-size:15px}.demo .keys{font-size:12px}}
 .one .lead{max-width:none;text-wrap:balance}
-/* the download button stays visible on phones: it leads to /download, which explains Vikey is for Mac */
+/* the download button stays visible on phones: it leads to /download, which explains KuocKey is for Mac */
 @media(max-width:900px){.btn.dl-mac{display:inline-flex!important}}
 /* footer credit line: links inline, not stacked */
 .foot .col p a{display:inline;margin:0;color:var(--muted);text-decoration:underline}
@@ -338,37 +323,14 @@ h1 span{white-space:nowrap}
 .howto{max-width:620px;margin:0 auto 26px;text-align:left;border:1px solid var(--line);border-radius:14px;padding:4px 20px}
 .howto summary{cursor:pointer;font-weight:600;padding:12px 0;text-align:center}
 .howto h3{font-size:16px;margin:14px 0 6px}.howto ol{margin:0 0 8px;padding-left:20px;color:var(--muted);font-size:15px}.howto code{word-break:break-all}
-.sendbox .nicon{width:52px;height:52px;border-radius:14px;background:var(--chip);display:flex;align-items:center;justify-content:center}
-.sendbox .nicon .ic{width:28px;height:28px;fill:var(--blue)}
 @media(max-width:900px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.pgrid .pcard.mine{grid-column:1/-1;order:-1}}
 @media(max-width:380px){.pgrid{grid-template-columns:1fr}}
 .btn .ic,.btn .ic use{fill:currentColor}
 .pcard .alt.none{visibility:hidden}
-.sendbox .err{min-height:0}.sendbox .err:empty{display:none}
 @media(max-width:600px){.plats{gap:6px 22px}.plats span{display:none}.plats .ic{width:22px;height:22px}}
-.sendbox p,.sendbox h3{text-wrap:balance}.sendbox input[type=email]:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
 .pcard .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:auto}.pcard .two .btn{width:auto;margin-top:0;padding:10px 6px}
 .pcard .two.three{grid-template-columns:repeat(3,minmax(0,1fr))}.pcard .two.three .btn{font-size:14px}
-.sendbox .ts{min-height:65px}
-/* feedback page */
-.fbpage{max-width:620px;padding-top:56px;padding-bottom:80px}
-.fbform{display:grid;gap:4px;margin-top:24px}
-.fbform .fbkinds{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
-.fbform .fbkinds label{cursor:pointer}
-.fbform .fbkinds input{position:absolute;opacity:0;pointer-events:none}
-.fbform .fbkinds span{display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:999px;font-weight:600;font-size:14px;background:#fff}
-.fbform .fbkinds input:checked+span{background:var(--chip);border-color:var(--blue);color:var(--blue)}
-.fbform .fbkinds input:focus-visible+span{outline:2px solid var(--blue);outline-offset:2px}
-.fbform .field textarea{font-family:inherit;font-size:16px;resize:vertical;min-height:150px}
-.fbform .field input{font-size:16px}
-.fbform .field input:focus,.fbform .field textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
-.fbform .ts{min-height:65px;margin-top:6px}
-.fbform .err{color:#c0262d;margin:0}.fbform .err:empty{display:none}
-.fbform .btn.big{justify-self:start;margin-top:6px}
-.fbform .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.fbform .meta{margin-top:8px}
-.fbdone{text-align:center;padding:40px 0}.fbdone .tick{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:#e8f7ef;color:#1f9d57;font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:center}
-/* features page (Vikey): built visuals */
+/* features page (KuocKey): built visuals */
 .vkf .fdemo{width:min(520px,100%)}.vkf .fdemo .demo-body p{margin:0;font-size:19px;line-height:1.5;padding:4px 0}.vkf .fdemo .demo-body{gap:6px}
 .vkf .fdemo .en{color:var(--blue);background:var(--chip);border-radius:6px;padding:1px 6px}
 .ptiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;width:min(560px,100%)}

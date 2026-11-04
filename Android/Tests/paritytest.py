@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Live checks for the iOS build-23 keyboard behaviours on Android (port of iOS/Tests/KeyboardSystemParityTests):
 punctuation snaps back onto the word, smart dashes, Lets/wont contractions, capitals after a closing quote, and the
-personal dictionary's shortcuts (Text Replacements) with backspace undo. Needs a DEBUG build, the Vikey IME selected,
+personal dictionary's shortcuts (Text Replacements) with backspace undo. Needs a DEBUG build, the KuocKey IME selected,
 the app's main screen open, and a personal-dictionary entry omw -> "On my way!":
   adb shell content insert --uri content://user_dictionary/words --bind word:s:"On my way!" --bind shortcut:s:omw \\
       --bind frequency:i:250 --bind locale:s:en_US --bind appid:i:0
@@ -35,9 +35,9 @@ def main():
     sh("input tap %d %d" % (fx, fy)); time.sleep(1)
     top = ime_top(); fails = 0
     for name, lang, cap, keys, want in CASES:
-        sh("am broadcast -a app.vikey.DEBUG -p app.vikey --ez autocap %s >/dev/null" % ("true" if cap else "false"))
+        sh("am broadcast -a dev.quocnguyen.kuockey.DEBUG -p dev.quocnguyen.kuockey --ez autocap %s >/dev/null" % ("true" if cap else "false"))
         clear_field()
-        sh("am broadcast -a app.vikey.DEBUG -p app.vikey --ei lang %d --ez letters true >/dev/null" % lang); time.sleep(0.4)
+        sh("am broadcast -a dev.quocnguyen.kuockey.DEBUG -p dev.quocnguyen.kuockey --ei lang %d --ez letters true >/dev/null" % lang); time.sleep(0.4)
         for part in keys.split("\x03"):
             for i, sub in enumerate(part.split("\x04")):
                 if i: sh("; ".join(["input keycombination -t 200 59 21; sleep 0.3"] * 5)); time.sleep(0.5)   # Shift+Left, from the app's side
@@ -46,6 +46,6 @@ def main():
         time.sleep(0.6)
         got = field_text(); ok = got == want; fails += not ok
         print("%-4s %-18s got=%r expected=%r" % ("ok" if ok else "FAIL", name, got, want))
-    sh("am broadcast -a app.vikey.DEBUG -p app.vikey --ez autocap true >/dev/null")
+    sh("am broadcast -a dev.quocnguyen.kuockey.DEBUG -p dev.quocnguyen.kuockey --ez autocap true >/dev/null")
     print("%d/%d passed" % (len(CASES) - fails, len(CASES))); sys.exit(fails)
 if __name__ == "__main__": main()

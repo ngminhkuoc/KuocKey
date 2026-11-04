@@ -1,11 +1,11 @@
-// Settings on Linux: a flat JSON file at $XDG_CONFIG_HOME/vikey/settings.json with the same keys as the
+// Settings on Linux: a flat JSON file at $XDG_CONFIG_HOME/kuockey/settings.json with the same keys as the
 // macOS UserDefaults / Windows registry (InputMethod, SwitchKeyStatus, AutoSwitchByTyping, ...).
 #pragma once
 #include <string>
 #include <vector>
-namespace vikey { namespace prefs {
-std::string configDir();                                  // ~/.config/vikey
-std::string dataDir();                                    // ~/.local/share/vikey
+namespace kuockey { namespace prefs {
+std::string configDir();                                  // ~/.config/kuockey
+std::string dataDir();                                    // ~/.local/share/kuockey
 std::string settingsPath();
 void reload();                                            // re-read the file (after a change from the settings app)
 int getInt(const char* key, int fallback);

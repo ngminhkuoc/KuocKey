@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Vikey</string>
+	<string>KuocKey</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,10 +27,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.devuap.vikey.ios</string>
+			<string>dev.quocnguyen.kuockey.ios</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>vikey</string>
+				<string>kuockey</string>
 			</array>
 		</dict>
 	</array>

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Engine/KeepWords.inc from vikey-data/keep/keep_3.txt (built by vikey-data/keep/build_keep.py from
+"""Engine/KeepWords.inc from kuockey-data/keep/keep_3.txt (built by kuockey-data/keep/build_keep.py from
 crawled Vietnamese forum/comment text: words people really type that auto-correct must leave alone).
 usage: gen_inc.py [keep.txt]"""
 import os, sys
-src = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser('~/Work/vikey-data/keep/keep_3.txt')
+src = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser('~/Work/kuockey-data/keep/keep_3.txt')
 words = sorted({w.strip() for w in open(src) if w.strip().isascii() and w.strip().isalpha() and len(w.strip()) >= 3})
 out = os.path.join(os.path.dirname(__file__), '../../../Engine/KeepWords.inc')
 with open(out, 'w') as f:

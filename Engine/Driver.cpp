@@ -1,6 +1,6 @@
 //
 //  Driver.cpp
-//  Vikey
+//  KuocKey
 //
 
 #include "Driver.h"
@@ -17,16 +17,16 @@ static char16_t typedChar(Uint16 key, bool shift) {
     return keyCodeToCharacter(key | (shift ? CAPS_MASK : 0));
 }
 
-VikeyDriver::VikeyDriver() { H = (vKeyHookState*)vKeyInit(); }
+KuocKeyDriver::KuocKeyDriver() { H = (vKeyHookState*)vKeyInit(); }
 
-void VikeyDriver::engineOutput(VKEdit& e, Uint16 key, bool shift) {
+void KuocKeyDriver::engineOutput(VKEdit& e, Uint16 key, bool shift) {
     e.deleteCount = H->backspaceCount;
     for (int i = H->newCharCount - 1; i >= 0; i--) e.text.push_back(charOf(H->charData[i]));
     if (H->code == vRestore || H->code == vRestoreAndStartNewSession) { char16_t ch = typedChar(key, shift); if (ch) e.text.push_back(ch); }
     if (H->code == vRestoreAndStartNewSession) startNewSession();
 }
 
-void VikeyDriver::rememberFix(int corrected, Uint16 key, bool shift) {
+void KuocKeyDriver::rememberFix(int corrected, Uint16 key, bool shift) {
     undoActive = false;
     char16_t brk = typedChar(key, shift);
     if (!brk || brk == u'\n' || vAutoSwitchUndoCount <= 0 || corrected <= 0) return;
@@ -46,9 +46,9 @@ void VikeyDriver::rememberFix(int corrected, Uint16 key, bool shift) {
     undoActive = true;
 }
 
-void VikeyDriver::switchTo(int lang) { vLanguage = lang; startNewSession(); vAutoSwitchForget(); autoSwitches++; }
+void KuocKeyDriver::switchTo(int lang) { vLanguage = lang; startNewSession(); vAutoSwitchForget(); autoSwitches++; }
 
-void VikeyDriver::updatePause(double now) {
+void KuocKeyDriver::updatePause(double now) {
     if (paused && now >= pauseUntil) {
         paused = false;
         vAutoSwitchByTyping = autoSwitch ? 1 : 0;
@@ -57,7 +57,7 @@ void VikeyDriver::updatePause(double now) {
     if (!paused) vAutoSwitchByTyping = autoSwitch ? 1 : 0;
 }
 
-void VikeyDriver::manualSwitch(double now) {
+void KuocKeyDriver::manualSwitch(double now) {
     undoActive = false; undoneCount = 0;
     enCount = 0; enValid = true; prevN = 0; enAfterDouble = false; vAutoSwitchForget();
     vLanguage = vLanguage ? 0 : 1;
@@ -65,20 +65,20 @@ void VikeyDriver::manualSwitch(double now) {
     if (pauseAfterManual > 0) { paused = true; pauseUntil = now + pauseAfterManual; vAutoSwitchByTyping = 0; }
 }
 
-void VikeyDriver::setLanguage(int language) {
+void KuocKeyDriver::setLanguage(int language) {
     if (vLanguage == language) return;
     vLanguage = language;
     resetContext();
 }
 
-void VikeyDriver::resetContext() {
+void KuocKeyDriver::resetContext() {
     undoActive = false; undoneCount = 0;
     enCount = 0; enValid = true; prevN = 0; enAfterDouble = false;
     startNewSession();
     vAutoSwitchForget();
 }
 
-VKEdit VikeyDriver::press(Uint16 key, bool shift, double now) {
+VKEdit KuocKeyDriver::press(Uint16 key, bool shift, double now) {
     VKEdit e;
     updatePause(now);
     //Backspace right after an auto-fix puts the typed keys and the language back

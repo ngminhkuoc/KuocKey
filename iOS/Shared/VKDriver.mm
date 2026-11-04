@@ -4,7 +4,7 @@
 #include <vector>
 #include <cstring>
 
-// Engine settings (the macOS app defines these in VikeyCore.mm)
+// Engine settings (the macOS app defines these in KuocKeyCore.mm)
 int vLanguage = 1, vSwitchKeyStatus = 0, vCheckSpelling = 1, vUseModernOrthography = 1, vRestoreIfWrongSpelling = 1,
     vFixRecommendBrowser = 1, vUseSmartSwitchKey = 0, vOtherLanguage = 0, vAutoSwitchByTyping = 1;
 
@@ -39,11 +39,11 @@ static bool KeyFor(unichar c, Uint16 &key, bool &shift) {
 }
 
 @implementation VKDriver {
-    VikeyDriver *_d;
+    KuocKeyDriver *_d;
 }
 
 - (instancetype)init {
-    if ((self = [super init])) { _d = new VikeyDriver(); _d->pauseAfterManual = 5; }
+    if ((self = [super init])) { _d = new KuocKeyDriver(); _d->pauseAfterManual = 5; }
     return self;
 }
 - (void)dealloc { delete _d; }

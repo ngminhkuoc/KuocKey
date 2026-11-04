@@ -1,8 +1,8 @@
 import UIKit
 
 enum KeyboardStatus {
-    static let keyboardBundleID = "com.devuap.vikey.ios.keyboard"
-    /// Whether the user has added Vikey in Settings › Keyboards.
+    static let keyboardBundleID = "dev.quocnguyen.kuockey.ios.keyboard"
+    /// Whether the user has added KuocKey in Settings › Keyboards.
     static var isAdded: Bool {
         (UserDefaults.standard.object(forKey: "AppleKeyboards") as? [String])?.contains { $0.hasPrefix(keyboardBundleID) } ?? false
     }

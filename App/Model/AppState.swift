@@ -7,7 +7,7 @@ import SwiftUI
 final class AppState: ObservableObject {
     static let shared = AppState()
 
-    @Published private(set) var language: Int = Int(VikeyCore.language())
+    @Published private(set) var language: Int = Int(KuocKeyCore.language())
     @Published private(set) var isRunning = false
     @Published var needsOnboarding = false
     /// Bumped when the app in front changes, so the menu bar re-reads the per-app auto switch toggle.
@@ -17,8 +17,8 @@ final class AppState: ObservableObject {
     private var permissionTimer: Timer?
 
     private init() {
-        NotificationCenter.default.addObserver(forName: .VikeyLanguageDidChange, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in self?.language = Int(VikeyCore.language()) }
+        NotificationCenter.default.addObserver(forName: .KuocKeyLanguageDidChange, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.language = Int(KuocKeyCore.language()) }
         }
     }
 
@@ -38,23 +38,23 @@ final class AppState: ObservableObject {
     }
 
     private func tryStart() -> Bool {
-        guard VikeyCore.isAccessibilityTrusted(), VikeyCore.start() else { return false }
+        guard KuocKeyCore.isAccessibilityTrusted(), KuocKeyCore.start() else { return false }
         isRunning = true
         needsOnboarding = false
-        language = Int(VikeyCore.language())
+        language = Int(KuocKeyCore.language())
         permissionTimer?.invalidate()
         permissionTimer = nil
         return true
     }
 
     func setLanguage(_ value: Int) {
-        VikeyCore.setLanguageByUser(Int32(value))
-        language = Int(VikeyCore.language())
+        KuocKeyCore.setLanguageByUser(Int32(value))
+        language = Int(KuocKeyCore.language())
     }
 
     func toggleLanguage() { setLanguage(language == 1 ? 0 : 1) }
 }
 
 extension Notification.Name {
-    static let VikeyLanguageDidChange = Notification.Name(rawValue: "VikeyLanguageDidChange")
+    static let KuocKeyLanguageDidChange = Notification.Name(rawValue: "KuocKeyLanguageDidChange")
 }

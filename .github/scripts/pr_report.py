@@ -6,7 +6,7 @@ match the expected lines are used. DRY=1 prints instead of posting."""
 import io, json, os, re, sys, urllib.error, urllib.request, zipfile
 
 REPO, SHA, TOKEN = os.environ["REPO"], os.environ["SHA"], os.environ["GH_TOKEN"]
-MARK = "<!-- vikey-pr-report -->"
+MARK = "<!-- kuockey-pr-report -->"
 API = "https://api.github.com"
 H = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
 
@@ -86,7 +86,7 @@ for r in mains:   # newest first; the first one that kept its logs
     if base: base_sha = r["head_sha"]; break
 
 pm, bm = metrics(logs(run)), {k: (v, u) for k, v, u, d in metrics(base)}   # label -> (value, its own unit)
-lines = [MARK, f"**Vikey engine metrics** · `{SHA[:7]}` vs main" + (f" `{base_sha[:7]}`" if base_sha else ""), "",
+lines = [MARK, f"**KuocKey engine metrics** · `{SHA[:7]}` vs main" + (f" `{base_sha[:7]}`" if base_sha else ""), "",
          "| Metric | This PR | main | Change |", "|---|--:|--:|--:|"]
 for label, v, unit, d in pm:
     if label in bm:

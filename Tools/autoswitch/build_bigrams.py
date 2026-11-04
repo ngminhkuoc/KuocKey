@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Engine/BigramData.h (D30): how often each reading of a tie word (bus/bú, been/bên, mix/mĩ) follows a
 word, from real text: Vietnamese web + forums (with the English inside) and English web + Reddit
-(vikey-data: bulk/merged/bigram_vi.tsv, bigram_en.tsv, bigram/crawl_vi.tsv; test sets excluded).
+(kuockey-data: bulk/merged/bigram_vi.tsv, bigram_en.tsv, bigram/crawl_vi.tsv; test sets excluded).
 Only pairs whose second word is a tie form, seen MIN+ times. Sorted "prev\\tnext" keys for binary search."""
 import os, sys, unicodedata, collections, math
-D = os.path.expanduser('~/Work/vikey-data')
-MIN = int(os.environ.get('VIKEY_BIGRAM_MIN', '10'))
-NEXT_MIN = int(os.environ.get('VIKEY_BIGRAM_NEXT_MIN', '20'))   # D35: tie word + the word after it
+D = os.path.expanduser('~/Work/kuockey-data')
+MIN = int(os.environ.get('KUOCKEY_BIGRAM_MIN', '10'))
+NEXT_MIN = int(os.environ.get('KUOCKEY_BIGRAM_NEXT_MIN', '20'))   # D35: tie word + the word after it
 T = set()
 for l in open(f'{D}/bigram/tie_forms.tsv', encoding='utf-8'):
     a, b = l.rstrip('\n').split('\t'); T.add(a); T.add(unicodedata.normalize('NFC', b))

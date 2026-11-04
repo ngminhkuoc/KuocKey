@@ -1,2 +1,2 @@
--keep class app.vikey.ime.VikeyDriver { *; }
+-keep class dev.quocnguyen.kuockey.ime.KuocKeyDriver { *; }
 -keepclasseswithmembernames class * { native <methods>; }

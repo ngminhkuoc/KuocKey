@@ -1,6 +1,6 @@
 import Foundation
 
-/// Credits for the code and the data Vikey is built from (shared by the Mac and iOS apps).
+/// Credits for the code and the data KuocKey is built from (shared by the Mac and iOS apps).
 /// The same list is in ACKNOWLEDGEMENTS.md.
 struct Credit: Identifiable {
     let name: String, by: String, license: String, url: String
@@ -8,19 +8,18 @@ struct Credit: Identifiable {
 }
 
 enum Acknowledgements {
-    /// Code Vikey uses.
+    /// Code KuocKey uses.
     static let code: [Credit] = [
         Credit(name: "OpenKey", by: "Tuyen Mai", license: "GPL-3.0", url: "https://github.com/tuyenvm/OpenKey"),
-        Credit(name: "Sparkle", by: "Sparkle Project", license: "MIT", url: "https://sparkle-project.org"),
     ]
-    /// Text Vikey's word statistics are counted from (only counts are built in, no text).
+    /// Text KuocKey's word statistics are counted from (only counts are built in, no text).
     static let wordData: [Credit] = [
         Credit(name: "FrequencyWords (OpenSubtitles 2018)", by: "Hermit Dave", license: "CC BY-SA 4.0", url: "https://github.com/hermitdave/FrequencyWords"),
         Credit(name: "FineWeb-2 and FineWeb", by: "Hugging Face", license: "ODC-By 1.0", url: "https://huggingface.co/datasets/HuggingFaceFW/fineweb-2"),
         Credit(name: "HPLT v2", by: "High Performance Language Technologies", license: "CC0", url: "https://hplt-project.org"),
         Credit(name: "MADLAD-400", by: "Google", license: "ODC-By 1.0", url: "https://huggingface.co/datasets/allenai/MADLAD-400"),
         Credit(name: "Reddit comments", by: "tensorshield/reddit_dataset_157", license: "MIT", url: "https://huggingface.co/datasets/tensorshield/reddit_dataset_157"),
-        Credit(name: "Vietnamese forums and reader comments", by: "VnExpress, Tuổi Trẻ, Tinhte, Otofun, Dạy Nhau Học", license: "word statistics", url: "https://vikey.app/acknowledgements"),
+        Credit(name: "Vietnamese forums and reader comments", by: "VnExpress, Tuổi Trẻ, Tinhte, Otofun, Dạy Nhau Học", license: "word statistics", url: "https://github.com/ngminhkuoc/KuocKey/blob/main/ACKNOWLEDGEMENTS.md"),
         Credit(name: "Emoji names and keywords (CLDR)", by: "Unicode, Inc.", license: "Unicode License v3", url: "https://cldr.unicode.org"),
         Credit(name: "Emojibase", by: "Miles Johnson", license: "MIT", url: "https://emojibase.dev"),
     ]

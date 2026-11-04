@@ -6,7 +6,7 @@
 #include <windows.h>
 #include "Engine.h"
 
-namespace vikey {
+namespace kuockey {
 
 inline Uint16 engineKey(DWORD vk) {
     switch (vk) {
@@ -72,4 +72,4 @@ inline WORD vkOf(Uint16 key) {
     }
 }
 
-} // namespace vikey
+} // namespace kuockey

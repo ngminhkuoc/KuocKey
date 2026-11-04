@@ -1,6 +1,6 @@
 import UIKit
 
-/// The Vikey keyboard: keys go through the same engine and driver as the Mac app
+/// The KuocKey keyboard: keys go through the same engine and driver as the Mac app
 /// (Engine/Driver), and its edits are applied to the text field.
 /// The keyboard's root view: adopting UIInputViewAudioFeedback is what makes playInputClick() click.
 final class KeyboardInputView: UIInputView, UIInputViewAudioFeedback {
@@ -105,7 +105,7 @@ final class KeyboardViewController: UIInputViewController, KeyboardViewDelegate 
         let saved = UserDefaults.standard.object(forKey: languageKey) as? Int ?? 1
         driver.language = saved
         // the emoji index is built when the emoji keyboard first opens, not here: at launch it pushed the keyboard
-        // toward iOS's memory limit (iOS swapped in its own keyboard ~100 ms after Vikey opened, Tony)
+        // toward iOS's memory limit (iOS swapped in its own keyboard ~100 ms after KuocKey opened, Tony)
         requestSupplementaryLexicon { [weak self] lex in
             var r: [String: String] = [:]
             for e in lex.entries where e.userInput.lowercased() != e.documentText.lowercased()   // (contact names list themselves)

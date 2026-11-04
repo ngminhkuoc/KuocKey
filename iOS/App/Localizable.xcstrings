@@ -17,34 +17,34 @@
         }
       }
     },
-    "Thêm bàn phím Vikey trong Cài đặt": {
+    "Thêm bàn phím KuocKey trong Cài đặt": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Add the Vikey keyboard in Settings"
+            "value": "Add the KuocKey keyboard in Settings"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Thêm bàn phím Vikey trong Cài đặt"
+            "value": "Thêm bàn phím KuocKey trong Cài đặt"
           }
         }
       }
     },
-    "Cài đặt › Vikey › Bàn phím › bật Vikey.": {
+    "Cài đặt › KuocKey › Bàn phím › bật KuocKey.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Settings › Vikey › Keyboards › turn on Vikey."
+            "value": "Settings › KuocKey › Keyboards › turn on KuocKey."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cài đặt › Vikey › Bàn phím › bật Vikey."
+            "value": "Cài đặt › KuocKey › Bàn phím › bật KuocKey."
           }
         }
       }
@@ -65,18 +65,18 @@
         }
       }
     },
-    "Chạm vào đây, chọn Vikey bằng 🌐 rồi gõ": {
+    "Chạm vào đây, chọn KuocKey bằng 🌐 rồi gõ": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap here, pick Vikey with 🌐, and type"
+            "value": "Tap here, pick KuocKey with 🌐, and type"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chạm vào đây, chọn Vikey bằng 🌐 rồi gõ"
+            "value": "Chạm vào đây, chọn KuocKey bằng 🌐 rồi gõ"
           }
         }
       }
@@ -97,50 +97,50 @@
         }
       }
     },
-    "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), Vikey tự sửa từ đó và chuyển chế độ. Bấm xoá ngay sau đó để hoàn tác.": {
+    "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), KuocKey tự sửa từ đó và chuyển chế độ. Bấm xoá ngay sau đó để hoàn tác.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Type an English word while in Vietnamese (or the other way round) and Vikey fixes the word and switches. Press delete right after to undo."
+            "value": "Type an English word while in Vietnamese (or the other way round) and KuocKey fixes the word and switches. Press delete right after to undo."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), Vikey tự sửa từ đó và chuyển chế độ. Bấm xoá ngay sau đó để hoàn tác."
+            "value": "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), KuocKey tự sửa từ đó và chuyển chế độ. Bấm xoá ngay sau đó để hoàn tác."
           }
         }
       }
     },
-    "Khi bạn tự bấm phím VI/EN, Vikey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn.": {
+    "Khi bạn tự bấm phím VI/EN, KuocKey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When you press the VI/EN key yourself, Vikey doesn't switch on its own for 5 seconds, so your choice sticks."
+            "value": "When you press the VI/EN key yourself, KuocKey doesn't switch on its own for 5 seconds, so your choice sticks."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Khi bạn tự bấm phím VI/EN, Vikey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn."
+            "value": "Khi bạn tự bấm phím VI/EN, KuocKey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn."
           }
         }
       }
     },
-    "Trong ô nhập địa chỉ web, email hoặc tìm kiếm web, Vikey bắt đầu bằng tiếng Anh và quay lại ngôn ngữ cũ khi bạn rời ô đó.": {
+    "Trong ô nhập địa chỉ web, email hoặc tìm kiếm web, KuocKey bắt đầu bằng tiếng Anh và quay lại ngôn ngữ cũ khi bạn rời ô đó.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "In web address, email and web search fields, Vikey starts in English and goes back to your previous language when you leave the field."
+            "value": "In web address, email and web search fields, KuocKey starts in English and goes back to your previous language when you leave the field."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trong ô nhập địa chỉ web, email hoặc tìm kiếm web, Vikey bắt đầu bằng tiếng Anh và quay lại ngôn ngữ cũ khi bạn rời ô đó."
+            "value": "Trong ô nhập địa chỉ web, email hoặc tìm kiếm web, KuocKey bắt đầu bằng tiếng Anh và quay lại ngôn ngữ cũ khi bạn rời ô đó."
           }
         }
       }
@@ -225,18 +225,18 @@
         }
       }
     },
-    "Khi gõ xong một từ sai chính tả tiếng Việt, Vikey trả lại đúng các phím bạn đã gõ.": {
+    "Khi gõ xong một từ sai chính tả tiếng Việt, KuocKey trả lại đúng các phím bạn đã gõ.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When you finish a word that isn't valid Vietnamese, Vikey puts back exactly the keys you typed."
+            "value": "When you finish a word that isn't valid Vietnamese, KuocKey puts back exactly the keys you typed."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Khi gõ xong một từ sai chính tả tiếng Việt, Vikey trả lại đúng các phím bạn đã gõ."
+            "value": "Khi gõ xong một từ sai chính tả tiếng Việt, KuocKey trả lại đúng các phím bạn đã gõ."
           }
         }
       }
@@ -273,18 +273,18 @@
         }
       }
     },
-    "Rung nhẹ mỗi khi chạm phím, như bàn phím của iPhone. Cần bật Cho phép Truy cập đầy đủ: Cài đặt › Vikey › Bàn phím. Vikey chỉ dùng quyền này để rung, không bao giờ gửi gì ra khỏi máy.": {
+    "Rung nhẹ mỗi khi chạm phím, như bàn phím của iPhone. Cần bật Cho phép Truy cập đầy đủ: Cài đặt › KuocKey › Bàn phím. KuocKey chỉ dùng quyền này để rung, không bao giờ gửi gì ra khỏi máy.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A light tap on every key, like the iPhone keyboard. Needs Allow Full Access: Settings › Vikey › Keyboards. Vikey only uses it for haptics and never sends anything off your phone."
+            "value": "A light tap on every key, like the iPhone keyboard. Needs Allow Full Access: Settings › KuocKey › Keyboards. KuocKey only uses it for haptics and never sends anything off your phone."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rung nhẹ mỗi khi chạm phím, như bàn phím của iPhone. Cần bật Cho phép Truy cập đầy đủ: Cài đặt › Vikey › Bàn phím. Vikey chỉ dùng quyền này để rung, không bao giờ gửi gì ra khỏi máy."
+            "value": "Rung nhẹ mỗi khi chạm phím, như bàn phím của iPhone. Cần bật Cho phép Truy cập đầy đủ: Cài đặt › KuocKey › Bàn phím. KuocKey chỉ dùng quyền này để rung, không bao giờ gửi gì ra khỏi máy."
           }
         }
       }
@@ -369,18 +369,18 @@
         }
       }
     },
-    "Chưa có gì. Mở bàn phím Vikey và gõ thử.": {
+    "Chưa có gì. Mở bàn phím KuocKey và gõ thử.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nothing yet. Open the Vikey keyboard and type something."
+            "value": "Nothing yet. Open the KuocKey keyboard and type something."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chưa có gì. Mở bàn phím Vikey và gõ thử."
+            "value": "Chưa có gì. Mở bàn phím KuocKey và gõ thử."
           }
         }
       }
@@ -465,18 +465,18 @@
         }
       }
     },
-    "Vikey được thiết kế và phát triển bởi Tony Dinh, dựa trên dự án mã nguồn mở OpenKey của Tuyen Mai. Mã nguồn mở theo giấy phép GPL-3.0.": {
+    "KuocKey được thiết kế và phát triển bởi Tony Dinh, được Quoc Nguyen chỉnh sửa và phát triển thêm, dựa trên dự án mã nguồn mở OpenKey của Tuyen Mai. Mã nguồn mở theo giấy phép GPL-3.0.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey is designed and built by Tony Dinh, based on the open-source OpenKey project by Tuyen Mai. Open source under the GPL-3.0 license."
+            "value": "KuocKey is designed and built by Tony Dinh, modified and extended by Quoc Nguyen, based on the open-source OpenKey project by Tuyen Mai. Open source under the GPL-3.0 license."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey được thiết kế và phát triển bởi Tony Dinh, dựa trên dự án mã nguồn mở OpenKey của Tuyen Mai. Mã nguồn mở theo giấy phép GPL-3.0."
+            "value": "KuocKey được thiết kế và phát triển bởi Tony Dinh, được Quoc Nguyen chỉnh sửa và phát triển thêm, dựa trên dự án mã nguồn mở OpenKey của Tuyen Mai. Mã nguồn mở theo giấy phép GPL-3.0."
           }
         }
       }
@@ -561,50 +561,50 @@
         }
       }
     },
-    "Gõ tiếng Anh giữa câu tiếng Việt, Vikey tự sửa và chuyển chế độ cho bạn.": {
+    "Gõ tiếng Anh giữa câu tiếng Việt, KuocKey tự sửa và chuyển chế độ cho bạn.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Type English in the middle of Vietnamese and Vikey fixes the word and switches for you."
+            "value": "Type English in the middle of Vietnamese and KuocKey fixes the word and switches for you."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gõ tiếng Anh giữa câu tiếng Việt, Vikey tự sửa và chuyển chế độ cho bạn."
+            "value": "Gõ tiếng Anh giữa câu tiếng Việt, KuocKey tự sửa và chuyển chế độ cho bạn."
           }
         }
       }
     },
-    "Thêm bàn phím Vikey": {
+    "Thêm bàn phím KuocKey": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Add the Vikey keyboard"
+            "value": "Add the KuocKey keyboard"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Thêm bàn phím Vikey"
+            "value": "Thêm bàn phím KuocKey"
           }
         }
       }
     },
-    "Mở Cài đặt của Vikey": {
+    "Mở Cài đặt của KuocKey": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Vikey's Settings"
+            "value": "Open KuocKey's Settings"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mở Cài đặt của Vikey"
+            "value": "Mở Cài đặt của KuocKey"
           }
         }
       }
@@ -625,18 +625,18 @@
         }
       }
     },
-    "Bật Vikey": {
+    "Bật KuocKey": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Turn on Vikey"
+            "value": "Turn on KuocKey"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bật Vikey"
+            "value": "Bật KuocKey"
           }
         }
       }
@@ -673,34 +673,34 @@
         }
       }
     },
-    "Đã thêm Vikey": {
+    "Đã thêm KuocKey": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey added"
+            "value": "KuocKey added"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Đã thêm Vikey"
+            "value": "Đã thêm KuocKey"
           }
         }
       }
     },
-    "Vikey chỉ dùng Truy cập đầy đủ để rung khi gõ phím. Bàn phím không kết nối mạng, những gì bạn gõ không rời khỏi máy.": {
+    "KuocKey chỉ dùng Truy cập đầy đủ để rung khi gõ phím. Bàn phím không kết nối mạng, những gì bạn gõ không rời khỏi máy.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey only uses Full Access for haptics. The keyboard never uses the network; what you type stays on your phone."
+            "value": "KuocKey only uses Full Access for haptics. The keyboard never uses the network; what you type stays on your phone."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey chỉ dùng Truy cập đầy đủ để rung khi gõ phím. Bàn phím không kết nối mạng, những gì bạn gõ không rời khỏi máy."
+            "value": "KuocKey chỉ dùng Truy cập đầy đủ để rung khi gõ phím. Bàn phím không kết nối mạng, những gì bạn gõ không rời khỏi máy."
           }
         }
       }
@@ -737,34 +737,18 @@
         }
       }
     },
-    "Vikey": {
+    "KuocKey": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey"
+            "value": "KuocKey"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey"
-          }
-        }
-      }
-    },
-    "vikey.app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "vikey.app"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "vikey.app"
+            "value": "KuocKey"
           }
         }
       }
@@ -849,34 +833,18 @@
         }
       }
     },
-    "Khi bạn chạm lệch phím (\"teh\" thay vì \"the\"), Vikey sửa từ đó khi bạn bấm phím cách. Bấm xoá ngay sau đó để giữ lại từ bạn gõ.": {
+    "Khi bạn chạm lệch phím (\"teh\" thay vì \"the\"), KuocKey sửa từ đó khi bạn bấm phím cách. Bấm xoá ngay sau đó để giữ lại từ bạn gõ.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When you hit a neighbouring key (\"teh\" instead of \"the\"), Vikey fixes the word when you press space. Press delete right after to keep what you typed."
+            "value": "When you hit a neighbouring key (\"teh\" instead of \"the\"), KuocKey fixes the word when you press space. Press delete right after to keep what you typed."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Khi bạn chạm lệch phím (\"teh\" thay vì \"the\"), Vikey sửa từ đó khi bạn bấm phím cách. Bấm xoá ngay sau đó để giữ lại từ bạn gõ."
-          }
-        }
-      }
-    },
-    "Gửi góp ý": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Send feedback"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gửi góp ý"
+            "value": "Khi bạn chạm lệch phím (\"teh\" thay vì \"the\"), KuocKey sửa từ đó khi bạn bấm phím cách. Bấm xoá ngay sau đó để giữ lại từ bạn gõ."
           }
         }
       }
@@ -945,18 +913,18 @@
         }
       }
     },
-    "Vikey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.": {
+    "KuocKey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey switches between English and Vietnamese using word statistics counted from these sources. The app contains only the statistics, never the text."
+            "value": "KuocKey switches between English and Vietnamese using word statistics counted from these sources. The app contains only the statistics, never the text."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vikey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào."
+            "value": "KuocKey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào."
           }
         }
       }
@@ -1105,18 +1073,18 @@
         }
       }
     },
-    "Chạm vào ô bên dưới, giữ 🌐 để chọn Vikey, rồi gõ thử \"tooi ddi meeting nhes\".": {
+    "Chạm vào ô bên dưới, giữ 🌐 để chọn KuocKey, rồi gõ thử \"tooi ddi meeting nhes\".": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap the box below, hold 🌐 to pick Vikey, then try typing \"tooi ddi meeting nhes\"."
+            "value": "Tap the box below, hold 🌐 to pick KuocKey, then try typing \"tooi ddi meeting nhes\"."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chạm vào ô bên dưới, giữ 🌐 để chọn Vikey, rồi gõ thử \"tooi ddi meeting nhes\"."
+            "value": "Chạm vào ô bên dưới, giữ 🌐 để chọn KuocKey, rồi gõ thử \"tooi ddi meeting nhes\"."
           }
         }
       }
@@ -1197,16 +1165,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Telex và Telex đơn giản 2: w đứng riêng ra ư. Telex đơn giản 1: w đứng riêng vẫn là w. Cả ba kiểu đều gõ uw, ow, aw ra ư, ơ, ă. Trên bàn phím điện thoại, [ và ] luôn là dấu ngoặc."
-          }
-        }
-      }
-    },
-    "Góp ý": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Feedback"
           }
         }
       }

@@ -1,6 +1,6 @@
-name: VikeyiOS
+name: KuocKeyiOS
 options:
-  bundleIdPrefix: com.devuap
+  bundleIdPrefix: dev.quocnguyen
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
@@ -16,7 +16,7 @@ settings:
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     CODE_SIGN_STYLE: Automatic
 targets:
-  Vikey:
+  KuocKey:
     type: application
     platform: iOS
     sources:
@@ -26,16 +26,16 @@ targets:
       - path: ../App/Model/Acknowledgements.swift
       - path: ../App/Model/Brand.swift
     dependencies:
-      - target: VikeyKeyboard
+      - target: KuocKeyKeyboard
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: Vikey
+        CFBundleDisplayName: KuocKey
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleURLTypes:
-          - CFBundleURLName: com.devuap.vikey.ios
-            CFBundleURLSchemes: [vikey]   # the keyboard's Vikey mark opens the app
+          - CFBundleURLName: dev.quocnguyen.kuockey.ios
+            CFBundleURLSchemes: [kuockey]   # the keyboard's KuocKey mark opens the app
         UILaunchScreen: {}
         ITSAppUsesNonExemptEncryption: false
         CFBundleDevelopmentRegion: en
@@ -43,16 +43,16 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
     entitlements:
-      path: App/Vikey.entitlements
+      path: App/KuocKey.entitlements
       properties:
-        com.apple.security.application-groups: [group.com.devuap.vikey]
+        com.apple.security.application-groups: [group.dev.quocnguyen.kuockey]
     settings:
       base:
-        PRODUCT_NAME: Vikey
-        PRODUCT_BUNDLE_IDENTIFIER: com.devuap.vikey.ios
+        PRODUCT_NAME: KuocKey
+        PRODUCT_BUNDLE_IDENTIFIER: dev.quocnguyen.kuockey.ios
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-  VikeyKeyboard:
+  KuocKeyKeyboard:
     type: app-extension
     platform: iOS
     sources:
@@ -68,7 +68,7 @@ targets:
     info:
       path: Keyboard/Info.plist
       properties:
-        CFBundleDisplayName: Vikey
+        CFBundleDisplayName: KuocKey
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDevelopmentRegion: en
@@ -82,18 +82,18 @@ targets:
             PrimaryLanguage: mul
             RequestsOpenAccess: true
     entitlements:
-      path: Keyboard/VikeyKeyboard.entitlements
+      path: Keyboard/KuocKeyKeyboard.entitlements
       properties:
-        com.apple.security.application-groups: [group.com.devuap.vikey]
+        com.apple.security.application-groups: [group.dev.quocnguyen.kuockey]
     settings:
       base:
-        PRODUCT_NAME: VikeyKeyboard
-        PRODUCT_BUNDLE_IDENTIFIER: com.devuap.vikey.ios.keyboard
+        PRODUCT_NAME: KuocKeyKeyboard
+        PRODUCT_BUNDLE_IDENTIFIER: dev.quocnguyen.kuockey.ios.keyboard
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_OBJC_BRIDGING_HEADER: Keyboard/Keyboard-Bridging-Header.h
         HEADER_SEARCH_PATHS: ["$(SRCROOT)/../Engine", "$(SRCROOT)/../Engine/platforms", "$(SRCROOT)/Shared"]
         APPLICATION_EXTENSION_API_ONLY: YES
-  VikeyTests:
+  KuocKeyTests:
     type: bundle.unit-test
     platform: iOS
     sources:
@@ -110,14 +110,14 @@ targets:
           - "platforms/linux.h"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.devuap.vikey.ios.tests
+        PRODUCT_BUNDLE_IDENTIFIER: dev.quocnguyen.kuockey.ios.tests
         SWIFT_OBJC_BRIDGING_HEADER: Keyboard/Keyboard-Bridging-Header.h
         HEADER_SEARCH_PATHS: ["$(SRCROOT)/../Engine", "$(SRCROOT)/../Engine/platforms", "$(SRCROOT)/Shared"]
         GENERATE_INFOPLIST_FILE: YES
 schemes:
-  Vikey:
+  KuocKey:
     build:
       targets:
-        Vikey: all
+        KuocKey: all
     test:
-      targets: [VikeyTests]
+      targets: [KuocKeyTests]

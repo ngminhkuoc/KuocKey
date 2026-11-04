@@ -40,7 +40,7 @@ struct TypingLogView: View {
         .onAppear { reload() }
         .confirmationDialog("Xoá toàn bộ nhật ký gõ?", isPresented: $confirmClear) {
             Button("Xoá", role: .destructive) {
-                VikeyCore.clearTypingLog()
+                KuocKeyCore.clearTypingLog()
                 reload()
             }
         } message: {
@@ -61,11 +61,11 @@ struct TypingLogView: View {
         loadGeneration += 1
         let generation = loadGeneration
         // the stats as of the flush: a key typed while it runs isn't in the rows read, so it isn't counted either
-        let snapshot = (VikeyCore.typingLogStats() as? [String: [String: Int]]) ?? [:]
-        VikeyCore.flushTypingLogThen {
+        let snapshot = (KuocKeyCore.typingLogStats() as? [String: [String: Int]]) ?? [:]
+        KuocKeyCore.flushTypingLogThen {
             guard generation == loadGeneration else { return }
             stats = snapshot
-            let path = VikeyCore.typingLogPath()
+            let path = KuocKeyCore.typingLogPath()
             DispatchQueue.global(qos: .userInitiated).async {
                 let loaded = LogEvent.load(from: path, limit: 300)
                 DispatchQueue.main.async { if generation == loadGeneration { events = loaded } }
@@ -74,8 +74,8 @@ struct TypingLogView: View {
     }
 
     private func reveal() {
-        VikeyCore.flushTypingLogThen {
-            let url = URL(fileURLWithPath: VikeyCore.typingLogPath())
+        KuocKeyCore.flushTypingLogThen {
+            let url = URL(fileURLWithPath: KuocKeyCore.typingLogPath())
             if FileManager.default.fileExists(atPath: url.path) {
                 NSWorkspace.shared.activateFileViewerSelecting([url])
             } else {

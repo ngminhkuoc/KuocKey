@@ -2,7 +2,7 @@
 #pragma once
 #include <windows.h>
 #include <string>
-namespace vikey { namespace site {
+namespace kuockey { namespace site {
 bool isBrowser(const std::wstring& exe);
 /// Posted to the owner window every second with the site in front; no parameters: read it with lastHost().
 const UINT WM_SITE = WM_APP + 6;

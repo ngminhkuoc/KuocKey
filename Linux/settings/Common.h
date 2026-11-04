@@ -1,4 +1,4 @@
-// Shared pieces of vikey-settings: hotkey names and the shortcut recorder (same bit layout as the Mac/Windows
+// Shared pieces of kuockey-settings: hotkey names and the shortcut recorder (same bit layout as the Mac/Windows
 // apps: low byte = key code, 0xFE = modifiers only, 0x100 Ctrl, 0x200 Alt, 0x400 Super, 0x800 Shift, 0x8000 sound),
 // the (?) tip next to a setting's title, and the window entry points.
 #pragma once
@@ -6,11 +6,11 @@
 #include <string>
 #include <functional>
 #include "../ibus/Prefs.h"
-#ifndef VIKEY_VERSION
-#define VIKEY_VERSION "0.0.0"
+#ifndef KUOCKEY_VERSION
+#define KUOCKEY_VERSION "0.0.0"
 #endif
-#ifndef VIKEY_DATADIR
-#define VIKEY_DATADIR "/usr/share/vikey"
+#ifndef KUOCKEY_DATADIR
+#define KUOCKEY_DATADIR "/usr/share/kuockey"
 #endif
 namespace ui {
 int currentHotkey();                            // the Vietnamese/English switch, default Alt+Z
@@ -33,5 +33,3 @@ void buildGuide(GtkApplication* app, bool thenMain);
 void buildEmoji(GtkApplication* app);
 void presentAcknowledgements(GtkWidget* parent);
 void buildAcknowledgements(GtkApplication* app);
-void checkUpdate(GtkApplication* app, bool quiet);
-void crashReport(GtkApplication* app, bool dialog);   // --crash-report [--dialog] (CrashReport.cpp)

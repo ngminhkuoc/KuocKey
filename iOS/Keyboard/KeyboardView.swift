@@ -1,6 +1,6 @@
 import UIKit
 
-/// Debug readout (Vikey app › Hiện thông số bàn phím): what one key press costs on a real device.
+/// Debug readout (KuocKey app › Hiện thông số bàn phím): what one key press costs on a real device.
 enum Diag {
     static var on = false
     static var touchStart: CFTimeInterval = 0
@@ -106,7 +106,7 @@ final class KeyboardView: UIView {
     static var langStyle = 1   // Tony picked the pill (A); the bottom row is the fallback when the strip is off
     private var langTop: Bool { Self.langStyle > 0 && Self.barOn && Self.searchTop == nil && layer_ != .numpad }
     private var langTopWidth: CGFloat { [0, 50, 96, 70][min(Self.langStyle, 3)] }
-    /// The corner element: VI/EN switch and Vikey mark in one (LangMark.swift, Tony picked design A). Off = the plain
+    /// The corner element: VI/EN switch and KuocKey mark in one (LangMark.swift, Tony picked design A). Off = the plain
     /// pill and the strip's brand on the right (kept for the render tests of the old proposals).
     static var markOn = true
     let mark = LangMarkView()
@@ -207,7 +207,7 @@ final class KeyboardView: UIView {
         diagLabel.isHidden = diagnostics == nil
         addSubview(bar)
         bar.onPick = { [unowned self] i in self.delegate?.keyboard(self, pickSuggestion: i) }
-        bar.onBrand = { [unowned self] in self.openVikeyApp() }
+        bar.onBrand = { [unowned self] in self.openKuocKeyApp() }
         addSubview(mark)
         addSubview(popup); popup.isHidden = true
         addSubview(alternates); alternates.isHidden = true
@@ -831,9 +831,9 @@ final class SuggestionBar: UIView {
         markIcon.layer.cornerCurve = .continuous
         markIcon.layer.masksToBounds = true
         mark.addSubview(markIcon); mark.addSubview(markText)
-        mark.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapBrand)))   // opens the Vikey app (Tony)
+        mark.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapBrand)))   // opens the KuocKey app (Tony)
         mark.isAccessibilityElement = true
-        mark.accessibilityLabel = "Vikey"
+        mark.accessibilityLabel = "KuocKey"
         mark.accessibilityTraits = .button
         addSubview(mark)
         for i in 0..<3 {
@@ -910,10 +910,10 @@ final class SuggestionBar: UIView {
 }
 
 extension KeyboardView {
-    /// Opens the Vikey app (vikey://). A keyboard can't call UIApplication.shared, so this walks the responder chain
+    /// Opens the KuocKey app (kuockey://). A keyboard can't call UIApplication.shared, so this walks the responder chain
     /// to the host's UIApplication and calls open(_:options:completionHandler:) on it by selector.
-    func openVikeyApp() {
-        guard let url = URL(string: "vikey://") else { return }
+    func openKuocKeyApp() {
+        guard let url = URL(string: "kuockey://") else { return }
         let sel = NSSelectorFromString("openURL:options:completionHandler:")
         var r: UIResponder? = self
         while let next = r {
