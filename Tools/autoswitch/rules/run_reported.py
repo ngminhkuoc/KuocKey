@@ -3,7 +3,7 @@
 Prints "reported bugs fixed: N/M"; exits 1 if a bug marked fixed fails again."""
 import os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
-H = os.environ.get('VIKEY_HARNESS', os.path.join(HERE, '..', 'test', 'harness'))
+H = os.environ.get('KUOCKEY_HARNESS', os.path.join(HERE, '..', 'test', 'harness'))
 rows = [l.rstrip('\n').split('\t') for l in open(os.path.join(HERE, 'reported.tsv'), encoding='utf-8') if l.strip() and not l.startswith('#')]
 passed, back = 0, []
 for r in rows:

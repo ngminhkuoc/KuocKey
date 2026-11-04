@@ -1,6 +1,6 @@
 //
 //  TouchModel.h
-//  Vikey
+//  KuocKey
 //
 //  Fat-finger model for touch keyboards: which key did a touch mean? Combines where the finger
 //  landed (2D Gaussian around each key's center) with how likely each key is next given the letters
@@ -8,8 +8,8 @@
 //  inside a key always types that key; the model only decides touches near key borders.
 //
 
-#ifndef VikeyTouchModel_h
-#define VikeyTouchModel_h
+#ifndef KuocKeyTouchModel_h
+#define KuocKeyTouchModel_h
 
 struct TMKey {
     char letter;          // 'a'..'z'

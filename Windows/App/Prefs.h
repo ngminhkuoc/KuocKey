@@ -1,10 +1,10 @@
-// Settings in HKCU\Software\Vikey, same key names as the macOS app's UserDefaults.
+// Settings in HKCU\Software\KuocKey, same key names as the macOS app's UserDefaults.
 #pragma once
 #include <windows.h>
 #include <string>
 #include <vector>
 
-namespace vikey { namespace prefs {
+namespace kuockey { namespace prefs {
 
 int getInt(const wchar_t* key, int fallback);
 bool has(const wchar_t* key);
@@ -15,7 +15,7 @@ std::wstring getString(const wchar_t* key, const std::wstring& fallback);
 void setString(const wchar_t* key, const std::wstring& value);
 void remove(const wchar_t* key);
 
-/// %LOCALAPPDATA%\Vikey, created if needed.
+/// %LOCALAPPDATA%\KuocKey, created if needed.
 std::wstring appDataDir();
 
 /// Run at login via HKCU\...\Run.

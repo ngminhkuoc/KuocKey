@@ -1,6 +1,6 @@
 import Foundation
 
-/// Debug log of what each key press costs (Vikey app › Gỡ lỗi). No typed text is ever written: only
+/// Debug log of what each key press costs (KuocKey app › Gỡ lỗi). No typed text is ever written: only
 /// timings, counts and key kinds (letter, space, delete…). Lives in the shared app group so the app
 /// can send it; the keyboard can only write there with Full Access.
 enum KBLog {
@@ -16,7 +16,7 @@ enum KBLog {
         if buffer.count >= 20 { flush() }
     }
 
-    private static let queue = DispatchQueue(label: "vikey.kblog", qos: .utility)
+    private static let queue = DispatchQueue(label: "kuockey.kblog", qos: .utility)
 
     /// Writes on a background queue: file work on the main thread would itself cause lag.
     static func flush() {

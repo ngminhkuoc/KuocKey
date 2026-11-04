@@ -1,9 +1,9 @@
 #include "Prefs.h"
 #include <shlobj.h>
 
-namespace vikey { namespace prefs {
+namespace kuockey { namespace prefs {
 
-static const wchar_t* ROOT = L"Software\\Vikey";
+static const wchar_t* ROOT = L"Software\\KuocKey";
 
 static HKEY open(REGSAM access) {
     HKEY h = nullptr;
@@ -76,7 +76,7 @@ void remove(const wchar_t* key) {
 std::wstring appDataDir() {
     wchar_t path[MAX_PATH] = {0};
     SHGetFolderPathW(nullptr, CSIDL_LOCAL_APPDATA, nullptr, 0, path);
-    std::wstring dir = std::wstring(path) + L"\\Vikey";
+    std::wstring dir = std::wstring(path) + L"\\KuocKey";
     CreateDirectoryW(dir.c_str(), nullptr);
     return dir;
 }
@@ -85,7 +85,7 @@ static const wchar_t* RUN_KEY = L"Software\\Microsoft\\Windows\\CurrentVersion\\
 
 bool launchAtLogin() {
     HKEY h; if (RegOpenKeyExW(HKEY_CURRENT_USER, RUN_KEY, 0, KEY_READ, &h) != ERROR_SUCCESS) return false;
-    DWORD size = 0; bool ok = RegQueryValueExW(h, L"Vikey", nullptr, nullptr, nullptr, &size) == ERROR_SUCCESS;
+    DWORD size = 0; bool ok = RegQueryValueExW(h, L"KuocKey", nullptr, nullptr, nullptr, &size) == ERROR_SUCCESS;
     RegCloseKey(h); return ok;
 }
 
@@ -94,13 +94,13 @@ void setLaunchAtLogin(bool on) {
     if (on) {
         wchar_t exe[MAX_PATH]; GetModuleFileNameW(nullptr, exe, MAX_PATH);
         std::wstring cmd = L"\"" + std::wstring(exe) + L"\"";
-        RegSetValueExW(h, L"Vikey", 0, REG_SZ, (const BYTE*)cmd.c_str(), (DWORD)((cmd.size() + 1) * sizeof(wchar_t)));
-    } else RegDeleteValueW(h, L"Vikey");
+        RegSetValueExW(h, L"KuocKey", 0, REG_SZ, (const BYTE*)cmd.c_str(), (DWORD)((cmd.size() + 1) * sizeof(wchar_t)));
+    } else RegDeleteValueW(h, L"KuocKey");
     RegCloseKey(h);
 }
 
-/// OpenKey's input type 2 / 3 were Simple Telex 1 / 2 (D56; VNI, 1, isn't in Vikey). Its own one-time step, so people
-/// who moved from OpenKey before Vikey had the setting get it too; a style already chosen in Vikey stays.
+/// OpenKey's input type 2 / 3 were Simple Telex 1 / 2 (D56; VNI, 1, isn't in KuocKey). Its own one-time step, so people
+/// who moved from OpenKey before KuocKey had the setting get it too; a style already chosen in KuocKey stays.
 static void telexStyleFromOpenKey() {
     if (has(L"MigratedTelexStyle")) return;
     if (has(L"TelexStyle")) { setInt(L"MigratedTelexStyle", 1); return; }

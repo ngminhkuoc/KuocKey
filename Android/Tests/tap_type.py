@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Types text on the Vikey Android keyboard by tapping keys through adb (the real touch path).
+"""Types text on the KuocKey Android keyboard by tapping keys through adb (the real touch path).
 Usage: tap_type.py [--top PX] "text"   — letters, digits via the 123 layer, space, '\n' return, '\b' backspace, '\x01' = VI/EN key, '\x02' = Esc-like reset (taps the field).
 Geometry mirrors KeyboardView.kt (402 dp base). Reads the IME window top from dumpsys unless --top is given."""
 import subprocess, sys, re, time

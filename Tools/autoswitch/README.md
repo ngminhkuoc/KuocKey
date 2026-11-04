@@ -28,7 +28,7 @@ python3 bulk.py        # accuracy over the 20k English / 3.4k Vietnamese word li
 ./harness bench        # cost of one English-mode check
 ```
 
-`harness.cpp` drives the real engine and mirrors what `App/Core/VikeyCore.mm` does with its output.
+`harness.cpp` drives the real engine and mirrors what `App/Core/KuocKeyCore.mm` does with its output.
 
 ## Lock down behavior (run before and after any rule change)
 

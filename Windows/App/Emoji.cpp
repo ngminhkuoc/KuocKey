@@ -20,7 +20,7 @@
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "dwmapi.lib")
 
-namespace vikey { namespace emoji {
+namespace kuockey { namespace emoji {
 
 // ---- data ------------------------------------------------------------------------------------
 struct Term {   // weight: name 3, keyword 2
@@ -503,8 +503,8 @@ static LRESULT CALLBACK proc(HWND h, UINT m, WPARAM w, LPARAM l) {
 static void prepare() {
     if (_win) return;
     static bool reg = false;
-    if (!reg) { WNDCLASSW wc = {}; wc.lpfnWndProc = proc; wc.hInstance = _inst; wc.lpszClassName = L"VikeyEmoji"; wc.style = CS_DROPSHADOW; wc.hCursor = LoadCursor(nullptr, IDC_ARROW); RegisterClassW(&wc); reg = true; }
-    _win = CreateWindowExW(WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW, L"VikeyEmoji", L"Vikey Emoji", WS_POPUP, 0, 0, (int)WIDTH, (int)HEIGHT, nullptr, nullptr, _inst, nullptr);
+    if (!reg) { WNDCLASSW wc = {}; wc.lpfnWndProc = proc; wc.hInstance = _inst; wc.lpszClassName = L"KuocKeyEmoji"; wc.style = CS_DROPSHADOW; wc.hCursor = LoadCursor(nullptr, IDC_ARROW); RegisterClassW(&wc); reg = true; }
+    _win = CreateWindowExW(WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW, L"KuocKeyEmoji", L"KuocKey Emoji", WS_POPUP, 0, 0, (int)WIDTH, (int)HEIGHT, nullptr, nullptr, _inst, nullptr);
     DWORD pref = 2 /* DWMWCP_ROUND */; DwmSetWindowAttribute(_win, 33 /* DWMWA_WINDOW_ROUNDED_PREFERENCE */, &pref, sizeof(pref));
     COLORREF border = RGB(214, 214, 218); DwmSetWindowAttribute(_win, 34 /* DWMWA_BORDER_COLOR */, &border, sizeof(border));
 }

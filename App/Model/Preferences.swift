@@ -1,7 +1,7 @@
 import Foundation
 import ServiceManagement
 
-/// UserDefaults keys shared with the keyboard core (VikeyCore.mm reads them in VKLoadSettings).
+/// UserDefaults keys shared with the keyboard core (KuocKeyCore.mm reads them in VKLoadSettings).
 enum PrefKey {
     static let spelling = "Spelling"
     static let restoreIfInvalid = "RestoreIfInvalidWord"
@@ -18,7 +18,7 @@ enum PrefKey {
     static let hotkey = "SwitchKeyStatus"
     static let teencode = "Teencode"
     static let telexStyle = "TelexStyle"   // D56: 0 Telex, 1 Simple Telex 1, 2 Simple Telex 2
-    static let excludedApps = "ExcludedApps"   // bundle ids Vikey stays out of (array of String)
+    static let excludedApps = "ExcludedApps"   // bundle ids KuocKey stays out of (array of String)
     static let mainTab = "MainWindowTab"   // the main window's tab
 }
 
@@ -36,7 +36,7 @@ enum Preferences {
     }
 
     /// Call after changing a setting so the keyboard core picks it up.
-    static func apply() { VikeyCore.reloadSettings() }
+    static func apply() { KuocKeyCore.reloadSettings() }
 }
 
 enum LaunchAtLogin {
@@ -45,7 +45,7 @@ enum LaunchAtLogin {
         do {
             if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
         } catch {
-            NSLog("Vikey: launch at login change failed: \(error)")
+            NSLog("KuocKey: launch at login change failed: \(error)")
         }
     }
 }

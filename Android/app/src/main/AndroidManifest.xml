@@ -7,7 +7,7 @@
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Vikey">
+        android:theme="@style/Theme.KuocKey">
         <activity android:name=".MainActivity" android:exported="true" android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -15,7 +15,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".ime.VikeyIME"
+            android:name=".ime.KuocKeyIME"
             android:exported="true"
             android:label="@string/ime_name"
             android:permission="android.permission.BIND_INPUT_METHOD">

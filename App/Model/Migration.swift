@@ -1,6 +1,6 @@
 import Foundation
 
-/// First launch of Vikey on a Mac that used OpenKey: bring over the settings, the per-app/per-site
+/// First launch of KuocKey on a Mac that used OpenKey: bring over the settings, the per-app/per-site
 /// language memory, macros and the typing log, so nothing has to be set up again.
 enum Migration {
     static func fromOpenKeyIfNeeded() {
@@ -21,7 +21,7 @@ enum Migration {
         let fm = FileManager.default
         if let support = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
             let from = support.appendingPathComponent("OpenKey/typing-log.jsonl")
-            let toDir = support.appendingPathComponent("Vikey")
+            let toDir = support.appendingPathComponent("KuocKey")
             let to = toDir.appendingPathComponent("typing-log.jsonl")
             if fm.fileExists(atPath: from.path), !fm.fileExists(atPath: to.path) {
                 try? fm.createDirectory(at: toDir, withIntermediateDirectories: true)
@@ -39,8 +39,8 @@ enum Migration {
         defaults.set(0, forKey: PrefEmoji.hotkey)
     }
 
-    /// OpenKey's input type 2 / 3 were Simple Telex 1 / 2 (D56; VNI, 1, isn't in Vikey). Its own one-time step, so people
-    /// who moved from OpenKey before Vikey had the setting get it too; a style already chosen in Vikey stays.
+    /// OpenKey's input type 2 / 3 were Simple Telex 1 / 2 (D56; VNI, 1, isn't in KuocKey). Its own one-time step, so people
+    /// who moved from OpenKey before KuocKey had the setting get it too; a style already chosen in KuocKey stays.
     private static func telexStyleFromOpenKeyIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: "MigratedTelexStyle") else { return }

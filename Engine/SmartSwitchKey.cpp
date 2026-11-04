@@ -1,6 +1,6 @@
 //
 //  SmartSwitchKey.cpp
-//  Vikey (based on OpenKey)
+//  KuocKey (based on OpenKey)
 //
 //  Created by Tuyen on 8/13/19.
 //  Copyright © 2019 Tuyen Mai. All rights reserved.

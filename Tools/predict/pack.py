@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Packs vikey-data's next-word table (predict/next_words.tsv: context<TAB>word count<TAB>...) into the keyboard's
+"""Packs kuockey-data's next-word table (predict/next_words.tsv: context<TAB>word count<TAB>...) into the keyboard's
 iOS/Keyboard/NextWords.tsv: context<TAB>w1<TAB>w2<TAB>w3, byte-sorted (NextWords.swift binary-searches it).
 Built from FineWeb-2, HPLT, MADLAD-400, FineWeb and Reddit word counts (see ACKNOWLEDGEMENTS.md)."""
 import os, unicodedata
-SRC = os.path.expanduser("~/Work/vikey-data/predict/next_words.tsv")
+SRC = os.path.expanduser("~/Work/kuockey-data/predict/next_words.tsv")
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "iOS", "Keyboard", "NextWords.tsv")
 rows = []
 for line in open(SRC, encoding="utf-8"):

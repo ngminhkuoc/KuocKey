@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     for (char c : all) { Uint16 k; bool s; if (keyFor(c, k, s)) keys.push_back({k, s}); }
     std::vector<double> t; t.reserve(keys.size() * 3);
     for (int round = 0; round < 3; round++) {
-        VikeyDriver d; vLanguage = 1;
+        KuocKeyDriver d; vLanguage = 1;
         for (auto& k : keys) {
             auto a = std::chrono::steady_clock::now();
             VKEdit e = d.press(k.first, k.second, 0);

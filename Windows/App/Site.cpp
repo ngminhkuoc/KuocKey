@@ -13,7 +13,7 @@
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")
 
-namespace vikey { namespace site {
+namespace kuockey { namespace site {
 
 // Everything UI Automation runs on two threads of its own, each with its own client (COM is per thread). The keyboard
 // and mouse hooks run on the main thread: a UIA call into a busy browser blocks for seconds, and the cursor would
@@ -82,7 +82,7 @@ static std::wstring currentHost(IUIAutomation* uia, HWND w) {
     return host;
 }
 
-/// Vikey's own windows are in front: UI Automation calls into them wait on the main thread (the main window took ~30 s
+/// KuocKey's own windows are in front: UI Automation calls into them wait on the main thread (the main window took ~30 s
 /// to show while it was busy), and there is no site or password field to read there.
 static bool ownWindowInFront(HWND w) { DWORD pid = 0; GetWindowThreadProcessId(w, &pid); return pid == GetCurrentProcessId(); }
 
@@ -114,7 +114,7 @@ static bool waitPumping(HANDLE ev, DWORD ms) {
 // Password focus: one atomic word, the focus generation (bumped on every focus change) above a 2-bit state.
 // A focus change sets "unknown", which counts as a password field: until UI Automation answers, keys go through
 // unchanged and stay out of the typing log. A check publishes its answer only if no focus change came in meanwhile,
-// so an older answer never overwrites a newer focus. "Assumed plain" is plain without a UI Automation read (Vikey's
+// so an older answer never overwrites a newer focus. "Assumed plain" is plain without a UI Automation read (KuocKey's
 // own window in front, no UI Automation client): it converts keys like plain, but never vouches for an element.
 enum { FOCUS_PLAIN = 0, FOCUS_PASSWORD = 1, FOCUS_UNKNOWN = 2, FOCUS_ASSUMED_PLAIN = 3, FOCUS_STATE = 3 };
 static std::atomic<unsigned long long> _focus{FOCUS_ASSUMED_PLAIN};

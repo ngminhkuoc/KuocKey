@@ -1,6 +1,6 @@
-// Types a mixed Vietnamese/English corpus into the real Vikey engine, key by key, with an
+// Types a mixed Vietnamese/English corpus into the real KuocKey engine, key by key, with an
 // "ideal user" who presses the switch hotkey only when the next word would come out wrong.
-// Mirrors App/Core/VikeyCore.mm (English-mode word buffer, auto switch, hotkey undo).
+// Mirrors App/Core/KuocKeyCore.mm (English-mode word buffer, auto switch, hotkey undo).
 // Build: see README.md.   Run: sim units.txt [--off] [--start en|vi] [--show N]
 #include "Engine.h"
 #include <cstdio>
@@ -19,7 +19,7 @@ static vKeyHookState* H;
 static bool trace = false;
 typedef std::u16string U;
 
-struct Platform {                    // everything VikeyCore.mm keeps outside the engine
+struct Platform {                    // everything KuocKeyCore.mm keeps outside the engine
     U screen;
     Uint32 enKeys[MAX_BUFF]; int enCount = 0; bool enValid = true; bool enAfterDouble = false;
     Uint32 prevKeys[2][MAX_BUFF]; int prevCounts[2] = {0, 0}; int prevN = 0;
@@ -229,7 +229,7 @@ static int wrongWords(const U& a, const U& b) {
 }
 
 int main(int argc, char** argv) {
-    if (getenv("VIKEY_TEENCODE")) vTeencode = atoi(getenv("VIKEY_TEENCODE"));   // D53 experiments (on by default)
+    if (getenv("KUOCKEY_TEENCODE")) vTeencode = atoi(getenv("KUOCKEY_TEENCODE"));   // D53 experiments (on by default)
     if (getenv("SIM_BIGRAM")) vAutoSwitchSetBigrams(getenv("SIM_BIGRAM"), getenv("SIM_BIGRAM_W") ? atof(getenv("SIM_BIGRAM_W")) : 1.0f,
                                                      getenv("SIM_BIGRAM_MIN") ? atoi(getenv("SIM_BIGRAM_MIN")) : 3);   // D30 experiment
     if (getenv("SIM_TRIGRAM")) vAutoSwitchSetTrigrams(getenv("SIM_TRIGRAM"), getenv("SIM_TRIGRAM_W") ? atof(getenv("SIM_TRIGRAM_W")) : 2.0f,

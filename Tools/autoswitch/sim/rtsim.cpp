@@ -58,7 +58,7 @@ static void key(Uint16 k, bool shift) {
 static void typeKeys(const std::string& s) { for (char c : s) { Uint16 k; bool sh; if (keyFor((unsigned char)c, k, sh)) key(k, sh); } }
 static void backspace(int n) { for (int i = 0; i < n; i++) { key(KEY_DELETE, false); note("⌫"); } }
 
-/** Mac app on a click: VikeyCore's mouse-down (a new session; English mode forgets its word). */
+/** Mac app on a click: KuocKeyCore's mouse-down (a new session; English mode forgets its word). */
 static void click() {
     if (vLanguage == 1) vKeyHandleEvent(vKeyEvent::Mouse, vKeyEventState::MouseDown, 0);
     else { P.enCount = 0; P.enValid = true; P.prevN = 0; P.enAfterDouble = false; vAutoSwitchForget(); }

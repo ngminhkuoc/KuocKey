@@ -4,14 +4,14 @@
 set -e
 root=$(cd "$(dirname "$0")/.." && pwd); as=$root/Tools/autoswitch
 export PYTHONUTF8=1
-cmake -S "$root/Linux" -B "$root/Linux/build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DVIKEY_IBUS=OFF >/dev/null
+cmake -S "$root/Linux" -B "$root/Linux/build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DKUOCKEY_IBUS=OFF >/dev/null
 cmake --build "$root/Linux/build"
 rc=0
 "$root/Linux/build/surrounding_test" || rc=1
 cd "$as"
 python3 rules/run_rules.py || rc=1
 python3 rules/golden.py ${1:-check} || rc=1
-U=${TMPDIR:-/tmp}/vikey_check_chat.units
+U=${TMPDIR:-/tmp}/kuockey_check_chat.units
 python3 sim/prep.py sim/corpus/chat_messages.txt > "$U"
 driver/undo_test || rc=1
 export DRV_OUT=${TMPDIR:-/tmp}/drv.txt

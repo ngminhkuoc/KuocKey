@@ -1,4 +1,4 @@
-// Auto-correct on real English typos (GitHub Typo Corpus, Birkbeck...: vikey-data/public), no touch data
+// Auto-correct on real English typos (GitHub Typo Corpus, Birkbeck...: kuockey-data/public), no touch data
 // (key centres only). usage: typoeval pairs.tsv [mode 0/1] [keep.txt]
 // pairs.tsv: typo<TAB>correction[<TAB>count]. Prints: fixed right, changed to something else, left alone.
 #include "TouchModel.h"

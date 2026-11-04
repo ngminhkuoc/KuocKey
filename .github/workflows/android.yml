@@ -37,7 +37,7 @@ jobs:
       - name: Name the APK by version
         run: |
           VER=$(grep MARKETING_VERSION project.yml | grep -o '"[^"]*"' | tr -d '"')
-          mkdir -p out && cp Android/app/build/outputs/apk/release/app-release*.apk "out/Vikey-$VER.apk"
+          mkdir -p out && cp Android/app/build/outputs/apk/release/app-release*.apk "out/KuocKey-$VER.apk"
           ls -la out
       - uses: actions/upload-artifact@v4
         with: { name: apk, path: out/*.apk }

@@ -1,8 +1,8 @@
 import AppKit
 
-/// Apps Vikey stays out of: while one is in front every key passes through untouched (no Vietnamese typing, no
+/// Apps KuocKey stays out of: while one is in front every key passes through untouched (no Vietnamese typing, no
 /// auto switch). Meant for remote-control apps, where the keys go to another machine with its own keyboard.
-/// The list is a UserDefaults array of bundle ids (PrefKey.excludedApps), read by VikeyCore.mm in VKLoadSettings.
+/// The list is a UserDefaults array of bundle ids (PrefKey.excludedApps), read by KuocKeyCore.mm in VKLoadSettings.
 enum ExcludedApps {
     /// Remote desktop / remote control clients. Edit freely in the main window: the user's list replaces this one.
     static let defaults: [String] = [
@@ -56,7 +56,7 @@ enum ExcludedApps {
         panel.allowedContentTypes = [.application]
         panel.allowsMultipleSelection = true
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
-        panel.message = "Chọn ứng dụng mà Vikey không gõ tiếng Việt"
+        panel.message = "Chọn ứng dụng mà KuocKey không gõ tiếng Việt"
         panel.prompt = "Thêm"
         guard panel.runModal() == .OK else { return }
         for url in panel.urls {
@@ -64,7 +64,7 @@ enum ExcludedApps {
         }
     }
 
-    /// Adds the app that was in front before Vikey's window (by its bundle id), for "Thêm ứng dụng đang mở".
+    /// Adds the app that was in front before KuocKey's window (by its bundle id), for "Thêm ứng dụng đang mở".
     static func runningApps() -> [(id: String, name: String)] {
         NSWorkspace.shared.runningApplications
             .filter { $0.activationPolicy == .regular && $0.bundleIdentifier != nil && $0.bundleIdentifier != Bundle.main.bundleIdentifier }

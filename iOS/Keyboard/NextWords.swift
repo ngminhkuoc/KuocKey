@@ -1,7 +1,7 @@
 import Foundation
 
 /// Next-word table: "context<TAB>w1<TAB>w2<TAB>w3" lines, sorted by context bytes (Tools/predict/pack.py from
-/// vikey-data's counts of 2- and 3-word sequences). Memory-mapped and binary-searched: no load time, little memory.
+/// kuockey-data's counts of 2- and 3-word sequences). Memory-mapped and binary-searched: no load time, little memory.
 final class NextWords {
     static let shared = NextWords()
     private let data: Data?

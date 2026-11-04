@@ -1,12 +1,12 @@
-# Vikey brand guideline
+# KuocKey brand guideline
 
 One small set of rules, used the same way on the website, the Mac app, the iOS app and anything we publish.
 Code that implements it: `App/Model/Brand.swift` (Mac + iOS), `site/style.css` (`--blue`, `.brand`).
 
 ## Name and tagline
-- **Vikey**: capital V, the rest lowercase, one word. Never "ViKey", "VIKEY" or "Vi Key".
-- Tagline: **Vikey - Gõ tiếng Việt** (store listings, page titles, og:site_name, the app's display name where it fits).
-- In running text the name is plain text in the surrounding font and color: "Vikey tự chuyển…".
+- **KuocKey**: capital K, lowercase uoc, capital K, lowercase ey, one word. Never "Kuockey", "KUOCKEY" or "Kuoc Key".
+- Tagline: **KuocKey - Gõ tiếng Việt** (store listings, page titles, og:site_name, the app's display name where it fits).
+- In running text the name is plain text in the surrounding font and color: "KuocKey tự chuyển…".
 
 ## Wordmark
 - "Vi" in ink, "key" in brand indigo, same font, **bold (700)**, no letter-spacing, never all caps.
@@ -29,7 +29,7 @@ Code that implements it: `App/Model/Brand.swift` (Mac + iOS), `site/style.css` (
 - Headlines 800 (web) / bold (apps); body regular. Short lines, no orphans, no split phrases ([[feedback_no_weird_line_breaks]]).
 
 ## Icon
-- `design/Vikey.icns` / AppIcon: white "Vi" on an indigo rounded square. Don't recolor, outline or put it on a busy background.
+- `design/KuocKey.icns` / AppIcon: white "Vi" on an indigo rounded square. Don't recolor, outline or put it on a busy background.
 - Small sizes: 16-34 px with a radius of ~22% of the size.
 
 ## Voice

@@ -1,12 +1,12 @@
 // The keyboard core on Windows: the low-level keyboard/mouse hooks that feed the Telex engine,
 // smart switch per app/website, auto switch by typing, and the typing log. A port of
-// App/Core/VikeyCore.mm (macOS) with the same behavior, decision for decision.
+// App/Core/KuocKeyCore.mm (macOS) with the same behavior, decision for decision.
 #pragma once
 #include <windows.h>
 #include <string>
 #include <functional>
 
-namespace vikey { namespace core {
+namespace kuockey { namespace core {
 
 bool start();                       // install hooks (needs a message loop on the calling thread)
 void stop();

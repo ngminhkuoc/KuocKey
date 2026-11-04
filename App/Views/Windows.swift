@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Vikey's windows are plain NSWindows hosting SwiftUI, so they can be opened from anywhere
+/// KuocKey's windows are plain NSWindows hosting SwiftUI, so they can be opened from anywhere
 /// (menu bar, reopening the app from Finder, onboarding) and always come to the front.
 @MainActor
 final class HostedWindow<Content: View> {
@@ -89,7 +89,7 @@ final class HostedWindow<Content: View> {
 @MainActor
 enum Windows {
     static let main: HostedWindow<MainView> = {
-        let w = HostedWindow(title: "Vikey", size: nil, resizable: false) { MainView() }
+        let w = HostedWindow(title: "KuocKey", size: nil, resizable: false) { MainView() }
         w.hideTitle = true
         return w
     }()
@@ -109,7 +109,7 @@ extension NSWindow {
 }
 
 /// A menu bar app has no Dock icon, so its windows can open behind others. While a window is
-/// open, Vikey becomes a regular app (Dock icon, ⌘Tab) and goes back to menu-bar-only when the last one closes.
+/// open, KuocKey becomes a regular app (Dock icon, ⌘Tab) and goes back to menu-bar-only when the last one closes.
 enum WindowFocus {
     private static var observer: Any?
 
@@ -120,7 +120,7 @@ enum WindowFocus {
             observer = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { note in
                 DispatchQueue.main.async {
                     //panels count too: the About panel can't become main, and closing the menu bar menu must not
-                    //turn Vikey back into a menu-bar-only app under it (it vanished right after opening)
+                    //turn KuocKey back into a menu-bar-only app under it (it vanished right after opening)
                     let open = NSApp.windows.contains { $0.isVisible && $0 !== note.object as? NSWindow &&
                         ($0.canBecomeMain || ($0 is NSPanel && $0.styleMask.contains(.titled))) }
                     if !open { NSApp.setActivationPolicy(.accessory) }
@@ -143,15 +143,15 @@ enum AboutPanel {
             if let link { attrs[.link] = URL(string: link) }
             credits.append(NSAttributedString(string: text, attributes: attrs))
         }
-        add("Tony Dinh\n")
+        add("Tony Dinh\nChỉnh sửa bởi ")
+        add("Quoc Nguyen", link: "https://github.com/ngminhkuoc")
+        add("\n")
         add("Dựa trên ")
         add("OpenKey", link: "https://github.com/tuyenvm/OpenKey")
         add(" của Tuyen Mai\nMã nguồn mở theo giấy phép GPL-3.0\n\n")
-        add("vikey.app", link: "https://vikey.app")
-        add("  ·  ")
-        add("GitHub", link: "https://github.com/tonyminibot/Vikey")
-        add("  ·  ")
-        add("Ghi nhận", link: "https://vikey.app/acknowledgements")
-        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits, .applicationName: "Vikey"])
+        add("kuockey.quocnguyen.dev", link: "https://kuockey.quocnguyen.dev")
+        add(" · ")
+        add("GitHub", link: "https://github.com/ngminhkuoc/KuocKey")
+        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits, .applicationName: "KuocKey"])
     }
 }

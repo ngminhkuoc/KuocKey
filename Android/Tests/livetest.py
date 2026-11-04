@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Live typing test on the Android emulator: taps the Vikey keyboard through the real touch path and reads
+"""Live typing test on the Android emulator: taps the KuocKey keyboard through the real touch path and reads
 the field back. Same cases as Windows/Tests/cases.tsv and Linux/Tests/livetest.py. Needs a DEBUG build
-installed, the Vikey IME selected, and the app's main screen open (the "Try the keyboard" field).
+installed, the KuocKey IME selected, and the app's main screen open (the "Try the keyboard" field).
 Exit code = number of failures."""
 import subprocess, sys, os, re, time, html
 sys.path.insert(0, os.path.dirname(__file__))
@@ -29,7 +29,7 @@ def clear_field():
 def main():
     fx, fy = find_field()
     sh("input tap %d %d" % (fx, fy)); time.sleep(1)
-    sh("am broadcast -a app.vikey.DEBUG -p app.vikey --ez autocap false >/dev/null"); time.sleep(0.8)
+    sh("am broadcast -a dev.quocnguyen.kuockey.DEBUG -p dev.quocnguyen.kuockey --ez autocap false >/dev/null"); time.sleep(0.8)
     sh("input tap %d %d" % (fx, fy)); time.sleep(0.6)
     top = ime_top(); L = layout()
     fails = 0; total = 0
@@ -38,7 +38,7 @@ def main():
         name, start, keys, expected = line.rstrip("\n").split("\t")[:4]
         total += 1
         clear_field()
-        sh("am broadcast -a app.vikey.DEBUG -p app.vikey --ei lang %d >/dev/null" % (1 if start == "vi" else 0)); time.sleep(0.4)
+        sh("am broadcast -a dev.quocnguyen.kuockey.DEBUG -p dev.quocnguyen.kuockey --ei lang %d >/dev/null" % (1 if start == "vi" else 0)); time.sleep(0.4)
         for part in re.split(r"(\{alt\+z\}|\\b|\\n)", keys):
             if not part: continue
             if part == "{alt+z}": vx, vy = L["\x01"]; sh("input tap %d %d" % (vx, top + vy)); time.sleep(0.2)
@@ -50,7 +50,7 @@ def main():
         ok = got == expected
         if not ok: fails += 1
         print("%-4s %-28s got=%r expected=%r" % ("ok" if ok else "FAIL", name, got, expected))
-    sh("am broadcast -a app.vikey.DEBUG -p app.vikey --ez autocap true >/dev/null")
+    sh("am broadcast -a dev.quocnguyen.kuockey.DEBUG -p dev.quocnguyen.kuockey --ez autocap true >/dev/null")
     print("%d/%d passed" % (total - fails, total))
     sys.exit(fails)
 if __name__ == "__main__": main()

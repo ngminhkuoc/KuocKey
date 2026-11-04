@@ -1,4 +1,4 @@
-// Auto-correct against real normalised social text (ViLexNorm: vikey-data/public/evals/vilexnorm_pairs.tsv).
+// Auto-correct against real normalised social text (ViLexNorm: kuockey-data/public/evals/vilexnorm_pairs.tsv).
 // Each line: keys typed (Telex) <TAB> the intended word <TAB> 1 if typed as intended. Typed in Vietnamese mode,
 // no touch data. Counts: right words broken, wrong words fixed to the intended one, other changes.
 #include "TouchModel.h"

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace vikey { namespace emoji {
+namespace kuockey { namespace emoji {
 
 void install(HINSTANCE inst);   // at launch: the hotkey handler, the index loaded in the background
 void toggle();

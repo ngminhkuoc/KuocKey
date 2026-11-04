@@ -8,7 +8,7 @@ enum OnboardingWindow {
         if window?.isVisible != true { window = nil }   // opened again later (menu › Hướng dẫn): start from the first step
         if window == nil {
             let w = NSWindow(contentViewController: NSHostingController(rootView: OnboardingView().environmentObject(AppState.shared)))
-            w.title = "Vikey"
+            w.title = "KuocKey"
             w.styleMask = [.titled, .closable]
             w.isReleasedWhenClosed = false
             window = w
@@ -114,8 +114,8 @@ struct OnboardingView: View {
 
     private var welcome: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Vikey dùng kiểu gõ Telex").font(.title2.weight(.semibold))
-            Text("Vikey chỉ hỗ trợ Telex, kiểu gõ phổ biến nhất. Bạn gõ tiếng Anh bình thường, Vikey tự nhận ra và không bỏ dấu nhầm.")
+            Text("KuocKey dùng kiểu gõ Telex").font(.title2.weight(.semibold))
+            Text("KuocKey chỉ hỗ trợ Telex, kiểu gõ phổ biến nhất. Bạn gõ tiếng Anh bình thường, KuocKey tự nhận ra và không bỏ dấu nhầm.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 8) {
                 GridRow { telex("aa", "â"); telex("aw", "ă"); telex("ee", "ê"); telex("oo", "ô") }
@@ -140,18 +140,18 @@ struct OnboardingView: View {
 
     private var permission: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Cho phép Vikey đọc phím gõ").font(.title2.weight(.semibold))
-            Text("Vikey cần quyền Trợ năng (Accessibility) để biến phím bạn gõ thành chữ tiếng Việt. Mọi thứ xử lý ngay trên máy, không gửi đi đâu.")
+            Text("Cho phép KuocKey đọc phím gõ").font(.title2.weight(.semibold))
+            Text("KuocKey cần quyền Trợ năng (Accessibility) để biến phím bạn gõ thành chữ tiếng Việt. Mọi thứ xử lý ngay trên máy, không gửi đi đâu.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: 8) {
                 Label("Bấm nút bên dưới để mở Cài đặt hệ thống", systemImage: "1.circle.fill")
-                Label("Bật Vikey trong danh sách Trợ năng", systemImage: "2.circle.fill")
-                Label("Quay lại đây, Vikey sẽ tự bắt đầu", systemImage: "3.circle.fill")
+                Label("Bật KuocKey trong danh sách Trợ năng", systemImage: "2.circle.fill")
+                Label("Quay lại đây, KuocKey sẽ tự bắt đầu", systemImage: "3.circle.fill")
             }
             .foregroundStyle(.secondary)
             HStack {
                 Button("Mở Cài đặt hệ thống") {
-                    VikeyCore.requestAccessibility()
+                    KuocKeyCore.requestAccessibility()
                     if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
                         NSWorkspace.shared.open(url)
                     }
@@ -165,7 +165,7 @@ struct OnboardingView: View {
     private var hotkeyStep: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Phím chuyển Anh/Việt").font(.title2.weight(.semibold))
-            Text("Vikey tự chuyển khi bạn gõ lẫn tiếng Anh. Khi muốn tự chuyển, bấm phím tắt này. Bấm vào ô để đổi phím.")
+            Text("KuocKey tự chuyển khi bạn gõ lẫn tiếng Anh. Khi muốn tự chuyển, bấm phím tắt này. Bấm vào ô để đổi phím.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 12) {
                 HotkeyRecorder(raw: Binding(get: { hotkeyRaw }, set: { k in
@@ -229,7 +229,7 @@ private struct PracticeStep: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Gõ thử").font(.title2.weight(.semibold))
-            Text(vietnamese ? "Gõ đúng các phím bên dưới, kể cả tiếng Anh. Vikey bỏ dấu cho tiếng Việt và để nguyên tiếng Anh."
+            Text(vietnamese ? "Gõ đúng các phím bên dưới, kể cả tiếng Anh. KuocKey bỏ dấu cho tiếng Việt và để nguyên tiếng Anh."
                             : "Bạn đang ở tiếng Anh: bấm \(hotkey) để sang tiếng Việt, rồi gõ các phím bên dưới.")
                 .foregroundStyle(.secondary)
                 .lineLimit(2, reservesSpace: true)   // both texts take two lines: switching VI/EN must not move the fields (Tony)
@@ -248,7 +248,7 @@ private struct PracticeStep: View {
                             .textFieldStyle(.roundedBorder)
                             .font(.system(size: 15))
                             .focused($focus, equals: i)
-                            .onSubmit { VikeyCore.resetTyping(); focus = min(i + 1, Self.lines.count - 1) }
+                            .onSubmit { KuocKeyCore.resetTyping(); focus = min(i + 1, Self.lines.count - 1) }
                         Image(systemName: ok ? "checkmark.circle.fill" : "circle")
                             .foregroundStyle(ok ? Color.green : Color.secondary.opacity(0.4))
                             .font(.title3)
@@ -256,7 +256,7 @@ private struct PracticeStep: View {
                 }
                 .onChange(of: ok) { done in
                     guard done && i + 1 < Self.lines.count else { return }
-                    VikeyCore.resetTyping()   // the next field starts a new word, as after a click
+                    KuocKeyCore.resetTyping()   // the next field starts a new word, as after a click
                     focus = i + 1
                 }
             }

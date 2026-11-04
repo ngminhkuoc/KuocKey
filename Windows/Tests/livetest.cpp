@@ -1,5 +1,5 @@
-// Live test for Vikey on Windows. Opens a window with an edit control, brings it to the front,
-// types each case's keys with SendInput (as a user would; Vikey's hooks see them), and compares
+// Live test for KuocKey on Windows. Opens a window with an edit control, brings it to the front,
+// types each case's keys with SendInput (as a user would; KuocKey's hooks see them), and compares
 // the text that ends up in the control with the expected text. Cases: cases.tsv (name<TAB>start
 // language vi|en<TAB>keys<TAB>expected). Keys: letters, digits, space, punctuation as typed;
 // \b Backspace, \n Enter, \t Tab, {alt+z} hotkey (default), {home} {end} {num0}..{num9} {add} {caps} named keys. Exit code = number of failures.
@@ -55,8 +55,8 @@ int wmain(int argc, wchar_t** argv) {
     std::wstring casesPath = argc > 1 ? argv[1] : L"cases.tsv";
     std::ifstream f(casesPath); if (!f) { printf("cannot open cases file\n"); return 99; }
     HINSTANCE inst = GetModuleHandleW(nullptr);
-    WNDCLASSW wc = {}; wc.lpfnWndProc = testWndProc; wc.hInstance = inst; wc.lpszClassName = L"VikeyLiveTest"; wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); RegisterClassW(&wc);
-    HWND win = CreateWindowExW(WS_EX_TOPMOST, L"VikeyLiveTest", L"Vikey live test", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 600, 300, nullptr, nullptr, inst, nullptr);
+    WNDCLASSW wc = {}; wc.lpfnWndProc = testWndProc; wc.hInstance = inst; wc.lpszClassName = L"KuocKeyLiveTest"; wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); RegisterClassW(&wc);
+    HWND win = CreateWindowExW(WS_EX_TOPMOST, L"KuocKeyLiveTest", L"KuocKey live test", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 600, 300, nullptr, nullptr, inst, nullptr);
     _edit = CreateWindowExW(0, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL, 10, 10, 560, 240, win, nullptr, inst, nullptr);
     SendMessageW(_edit, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
     // Bring our window to the front even when started from a console (foreground lock): the Alt-key trick.
@@ -80,8 +80,8 @@ int wmain(int argc, wchar_t** argv) {
         // set the start language through the registry + a hotkey-free path: the tray app re-reads InputMethod on reloadSettings;
         // the simplest robust way is to toggle with the hotkey until the tray state matches, so we read it back from the registry.
         int want = col[1] == "vi" ? 1 : 0;
-        HWND tray = FindWindowW(L"VikeyTray", nullptr);
-        if (!tray) { printf("Vikey is not running\n"); return 98; }
+        HWND tray = FindWindowW(L"KuocKeyTray", nullptr);
+        if (!tray) { printf("KuocKey is not running\n"); return 98; }
         if (GetForegroundWindow() != win) toFront();
         SetWindowTextW(_edit, L""); SetFocus(_edit); SendMessageW(_edit, EM_SETSEL, 0, 0); Sleep(150);
         key(VK_ESCAPE);   // Esc: a word break, ends whatever the previous case left

@@ -14,7 +14,7 @@ if (-not $env:TMPDIR) { $env:TMPDIR = $env:TEMP }
 python "$as/rules/run_rules.py"; if ($LASTEXITCODE) { $rc = 1 }
 $mode = if ($args.Count -gt 0) { $args[0] } else { 'check' }
 python "$as/rules/golden.py" $mode; if ($LASTEXITCODE) { $rc = 1 }
-$u = Join-Path $env:TMPDIR 'vikey_check_chat.units'
+$u = Join-Path $env:TMPDIR 'kuockey_check_chat.units'
 # write the units file from Python itself (a PowerShell pipeline would re-encode the Vietnamese text)
 $prep = ($as -replace '\\', '/') + '/sim/prep.py'; $corpus = ($as -replace '\\', '/') + '/sim/corpus/chat_messages.txt'; $uu = $u -replace '\\', '/'
 python -c "import runpy, sys, io; sys.stdout = io.TextIOWrapper(open(r'$uu', 'wb'), encoding='utf-8', newline='\n'); sys.argv = ['prep.py', r'$corpus']; runpy.run_path(r'$prep', run_name='__main__'); sys.stdout.flush()"

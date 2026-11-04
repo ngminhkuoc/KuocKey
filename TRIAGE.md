@@ -1,6 +1,6 @@
 # Triage
 
-How pull requests and issues on Vikey are labelled, checked and closed. The board is public: every comment is
+How pull requests and issues on KuocKey are labelled, checked and closed. The board is public: every comment is
 written for the person who opened the PR or issue.
 
 ## Labels
@@ -38,10 +38,10 @@ No reproduction label is added when no attempt was made, for example when it nee
 
 1. Read the issue and its comments. Check whether a merged PR or a release already fixed it.
 2. Close it, with a short comment, when it is already fixed (say which version), a duplicate (link the original),
-   spam, or not about Vikey.
+   spam, or not about KuocKey.
 3. Otherwise add the `area:` labels and `correctness` or `taste`.
 4. Try to reproduce bugs with low to medium effort, on the **released** build of the app: the Windows and Linux
-   builds from vikey.app in a virtual machine, the Mac app, the iOS simulator or the Android emulator. Reading the
+   builds from GitHub Releases in a virtual machine, the Mac app, the iOS simulator or the Android emulator. Reading the
    current code to confirm a reported cause also counts. Add `reproducible` or `not-reproducible` only after an
    actual attempt; without one, leave the reproduction label off.
 5. When something is missing (version, steps, which app), ask the reporter in a comment, in the language they wrote in.
@@ -51,8 +51,8 @@ No reproduction label is added when no attempt was made, for example when it nee
 
 1. Add the `area:` labels and `correctness` or `taste`.
 2. Review the diff: correctness, edge cases, consistency with [DECISIONS.md](DECISIONS.md) and the platform code,
-   and anything security-sensitive (`.github/`, `Tools/release/`, signing, the updater, code that downloads or
-   runs other code). Then approve, comment, or request changes.
+   and anything security-sensitive (`.github/`, `Tools/release/`, signing, and any code that opens a network
+   connection, downloads or runs other code: the apps make no network connections, so treat any new one as a red flag). Then approve, comment, or request changes.
 3. A PR that adds a feature or changes behaviour (what is typed, when auto switch triggers, what the app shows)
    must include a screenshot or a short demo video of the new behaviour. Without one, ask for it in a comment and
    request changes; the PR is not approved until it is there.

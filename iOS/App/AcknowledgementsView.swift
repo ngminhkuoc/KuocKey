@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Credits for the code and data Vikey is built from (Settings › Ghi nhận).
+/// Credits for the code and data KuocKey is built from (Settings › Ghi nhận).
 struct AcknowledgementsView: View {
     var body: some View {
         List {
-            section("Mã nguồn", Acknowledgements.code.filter { $0.name != "Sparkle" })   // Sparkle is the Mac updater
+            section("Mã nguồn", Acknowledgements.code)
             section("Dữ liệu từ ngữ", Acknowledgements.wordData,
-                    note: "Vikey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.")
+                    note: "KuocKey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.")
             section("Dữ liệu kiểm thử", Acknowledgements.testData,
                     note: "Chỉ dùng để đo và cải thiện độ chính xác, không có trong ứng dụng.")
         }

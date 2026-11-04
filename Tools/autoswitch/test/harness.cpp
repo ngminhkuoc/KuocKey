@@ -1,5 +1,5 @@
-// Drives the real Vikey engine with key sequences and simulates the text field, mirroring
-// what App/Core/VikeyCore.mm does with the engine's output (Unicode code table).
+// Drives the real KuocKey engine with key sequences and simulates the text field, mirroring
+// what App/Core/KuocKeyCore.mm does with the engine's output (Unicode code table).
 #include "Engine.h"
 #include <cstdio>
 #include <cstring>
@@ -129,10 +129,10 @@ static std::string utf8(const std::u16string& s) {
 int vTelexStyle __attribute__((weak)) = 0;
 #endif
 int main(int argc, char** argv) {
-    if (getenv("VIKEY_TEENCODE")) vTeencode = atoi(getenv("VIKEY_TEENCODE"));   // D53 experiments (on by default)
-    if (getenv("VIKEY_TELEX_STYLE")) vTelexStyle = atoi(getenv("VIKEY_TELEX_STYLE"));   // D56: 1 / 2 = Simple Telex 1 / 2
+    if (getenv("KUOCKEY_TEENCODE")) vTeencode = atoi(getenv("KUOCKEY_TEENCODE"));   // D53 experiments (on by default)
+    if (getenv("KUOCKEY_TELEX_STYLE")) vTelexStyle = atoi(getenv("KUOCKEY_TELEX_STYLE"));   // D56: 1 / 2 = Simple Telex 1 / 2
     H = (vKeyHookState*)vKeyInit();
-    if (getenv("VIKEY_AUTO_OFF")) { vAutoSwitchByTyping = 0; vRestoreIfWrongSpelling = 0; }   // a plain Telex input method, for comparison
+    if (getenv("KUOCKEY_AUTO_OFF")) { vAutoSwitchByTyping = 0; vRestoreIfWrongSpelling = 0; }   // a plain Telex input method, for comparison
     if (argc >= 2 && strcmp(argv[1], "lines") == 0) {
         // stdin: "<lang>\t<keys>" per line -> prints "<final text>\t<switches>\t<final lang>"
         char buf[4096];

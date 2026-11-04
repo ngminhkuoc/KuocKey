@@ -32,11 +32,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build the Vikey app
+      - name: Build the KuocKey app
         run: |
           brew install xcodegen
           xcodegen generate
-          xcodebuild -project Vikey.xcodeproj -scheme Vikey -configuration Release CODE_SIGNING_ALLOWED=NO build
+          xcodebuild -project KuocKey.xcodeproj -scheme KuocKey -configuration Release CODE_SIGNING_ALLOWED=NO build
   ios:
     runs-on: macos-latest
     steps:
@@ -47,7 +47,7 @@ jobs:
           cd iOS && xcodegen generate
           SIM=$(xcrun simctl list devices available | grep -E "iPhone" | head -1 | grep -oE "[0-9A-F-]{36}")
           set -o pipefail
-          TEST_RUNNER_VIKEY_CI=1 xcodebuild test -project VikeyiOS.xcodeproj -scheme Vikey -destination "id=$SIM" CODE_SIGNING_ALLOWED=NO 2>&1 | tee ../ios.log
+          TEST_RUNNER_KUOCKEY_CI=1 xcodebuild test -project KuocKeyiOS.xcodeproj -scheme KuocKey -destination "id=$SIM" CODE_SIGNING_ALLOWED=NO 2>&1 | tee ../ios.log
       - name: Keep the test summary for the PR report
         if: always() && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main')
         run: grep -E "Test Case .*(passed|failed)|Executed [0-9]+ tests" ios.log > ios-tests.log || true

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Google Play store graphics for Vikey for Android: icon-512, feature graphic 1024x500, phone screenshots 1080x1920.
+"""Google Play store graphics for KuocKey for Android: icon-512, feature graphic 1024x500, phone screenshots 1080x1920.
 
   play_assets.py <raw_dir> <out_dir>
 
@@ -32,12 +32,12 @@ SLIDES = [  # file, raw shot, callouts (source box, zoom target width[, vertical
     ("05_settings", "style", [((40, 1290, 1040, 1872), 960)]),
 ]
 CAPTIONS = {
-    "vi": [(["Tự chuyển Anh/Việt", "khi gõ"], "Cứ gõ, Vikey tự chọn ngôn ngữ"),
+    "vi": [(["Tự chuyển Anh/Việt", "khi gõ"], "Cứ gõ, KuocKey tự chọn ngôn ngữ"),
            (["Gõ trộn", "không cần chuyển tay"], "So với bộ gõ thông thường"),
            (["Gợi ý và", "tự sửa lỗi"], "Cả tiếng Việt lẫn tiếng Anh"),
            (["Tìm emoji", "bằng tiếng Việt"], "Gõ Telex ngay trong ô tìm"),
            (["Tuỳ chỉnh", "theo ý bạn"], "Kiểu gõ, đặt dấu, chính tả")],
-    "en-US": [(["English & Vietnamese,", "switched as you type"], "Just type. Vikey picks the language."),
+    "en-US": [(["English & Vietnamese,", "switched as you type"], "Just type. KuocKey picks the language."),
               (["Mix languages,", "no switching"], "Compared with a normal keyboard"),
               (["Suggestions", "and auto-correct"], "In Vietnamese and English"),
               (["Find any emoji", "by name"], "Search in English or Vietnamese"),
@@ -117,7 +117,7 @@ def feature(raw_path, lines, out):
     lf = font(36, "Semibold"); lh = 48
     x0 = 64; block = 96 + 40 + lh * len(lines); y0 = (H - block) // 2
     card(ic, 22, (x0, y0))
-    wf = font(88, "Bold"); bb = d.textbbox((0, 0), "Vikey", font=wf); tx0 = x0 + 96 + 26; ty = y0 + 48 - (bb[1] + bb[3]) / 2
+    wf = font(88, "Bold"); bb = d.textbbox((0, 0), "KuocKey", font=wf); tx0 = x0 + 96 + 26; ty = y0 + 48 - (bb[1] + bb[3]) / 2
     d.text((tx0, ty), "Vi", font=wf, fill=INK); d.text((tx0 + d.textlength("Vi", font=wf), ty), "key", font=wf, fill=INDIGO)
     y = y0 + 96 + 40
     for l in lines:

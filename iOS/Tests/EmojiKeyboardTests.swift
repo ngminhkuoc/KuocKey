@@ -2,7 +2,7 @@ import XCTest
 import UIKit
 
 /// The emoji keyboard's flow (open, search, insert, back to letters) and pictures of it at the
-/// widths of the iPhones Vikey runs on, for a visual check.
+/// widths of the iPhones KuocKey runs on, for a visual check.
 final class EmojiKeyboardTests: XCTestCase {
     private let sender = KeyboardView()
 

@@ -40,15 +40,15 @@ jobs:
         if: hashFiles('Windows/App/CMakeLists.txt') != ''
         run: |
           $ver = (Select-String -Path project.yml -Pattern 'MARKETING_VERSION: "([^"]+)"').Matches[0].Groups[1].Value
-          "VIKEY_VERSION=$ver" >> $env:GITHUB_ENV
+          "KUOCKEY_VERSION=$ver" >> $env:GITHUB_ENV
           cmake -S Windows -B Windows/build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          cmake --build Windows/build --config Release --target vikey
+          cmake --build Windows/build --config Release --target kuockey
         shell: pwsh
       - uses: actions/upload-artifact@v4
         if: hashFiles('Windows/App/CMakeLists.txt') != ''
         with:
-          name: Vikey-windows-${{ matrix.arch }}
-          path: Windows/build/App/Vikey.exe
+          name: KuocKey-windows-${{ matrix.arch }}
+          path: Windows/build/App/KuocKey.exe
 
   # Tag v<version> (pushed by Tools/release/release.sh): installers + portable zips onto the GitHub release.
   package:
@@ -84,13 +84,13 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "signing failed: $file" }
           }
           foreach ($arch in @('x64', 'arm64')) {
-            $src = "artifacts/Vikey-windows-$arch"
-            Sign "$src/Vikey.exe"
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DVersion=$ver" "/DArch=$arch" "/DSrc=$((Resolve-Path $src).Path)" Windows/installer/Vikey.iss
+            $src = "artifacts/KuocKey-windows-$arch"
+            Sign "$src/KuocKey.exe"
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DVersion=$ver" "/DArch=$arch" "/DSrc=$((Resolve-Path $src).Path)" Windows/installer/KuocKey.iss
             if ($LASTEXITCODE -ne 0) { exit 1 }
-            Sign "Windows/installer/out/Vikey-$ver-$arch-Setup.exe"
-            Move-Item "Windows/installer/out/Vikey-$ver-$arch-Setup.exe" dist/
-            Compress-Archive -Path "$src/Vikey.exe" -DestinationPath "dist/Vikey-$ver-$arch-portable.zip"
+            Sign "Windows/installer/out/KuocKey-$ver-$arch-Setup.exe"
+            Move-Item "Windows/installer/out/KuocKey-$ver-$arch-Setup.exe" dist/
+            Compress-Archive -Path "$src/KuocKey.exe" -DestinationPath "dist/KuocKey-$ver-$arch-portable.zip"
           }
           Get-ChildItem dist | Out-Host
         shell: pwsh

@@ -1,6 +1,6 @@
 //
 //  Vietnamese.h
-//  Vikey (based on OpenKey)
+//  KuocKey (based on OpenKey)
 //
 //  Created by Tuyen on 1/19/19.
 //  Copyright © 2019 Tuyen Mai. All rights reserved.

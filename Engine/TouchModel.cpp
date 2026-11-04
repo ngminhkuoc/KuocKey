@@ -1,6 +1,6 @@
 //
 //  TouchModel.cpp
-//  Vikey
+//  KuocKey
 //
 
 #include "TouchModel.h"

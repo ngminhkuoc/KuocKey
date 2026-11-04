@@ -1,9 +1,8 @@
-// vikey-settings: the Vikey window on Linux (GTK4 + libadwaita), 1:1 with the Mac app's MainView:
-// header (icon, Vikey, hotkey hint, Tiếng Việt / English), grouped rows with switches and (?) tips.
+// kuockey-settings: the KuocKey window on Linux (GTK4 + libadwaita), 1:1 with the Mac app's MainView:
+// header (icon, KuocKey, hotkey hint, Tiếng Việt / English), grouped rows with switches and (?) tips.
 // Also: the typing-log window (--log), About (--about) with Ghi nhận (--acknowledgements), the first-run guide
-// (--guide, Guide.cpp), the emoji picker (--emoji, Emoji.cpp), the update check (--check-update [--quiet]) and the
-// crash report question (--crash-report [--dialog], CrashReport.cpp).
-// Settings live in ~/.config/vikey/settings.json; the IBus engine watches that file.
+// (--guide, Guide.cpp) and the emoji picker (--emoji, Emoji.cpp). Fully offline: nothing is sent over the network.
+// Settings live in ~/.config/kuockey/settings.json; the IBus engine watches that file.
 #include "Common.h"
 #include <vector>
 #include <map>
@@ -11,7 +10,7 @@
 #include <cstring>
 #include <ctime>
 #include <algorithm>
-using namespace vikey;
+using namespace kuockey;
 
 // ---- shared helpers (Common.h) ------------------------------------------------------------------------------
 namespace ui {
@@ -110,16 +109,16 @@ void loadCss() {
 }  // namespace ui
 using namespace ui;
 
-/// Is Vikey one of the input sources (GNOME)? -1 when this desktop has no such setting.
-int vikeyInInputSources() {
+/// Is KuocKey one of the input sources (GNOME)? -1 when this desktop has no such setting.
+int kuockeyInInputSources() {
     GSettingsSchemaSource* src = g_settings_schema_source_get_default(); if (!src) return -1;
     GSettingsSchema* sc = g_settings_schema_source_lookup(src, "org.gnome.desktop.input-sources", TRUE); if (!sc) return -1; g_settings_schema_unref(sc);
     GSettings* s = g_settings_new("org.gnome.desktop.input-sources"); GVariant* v = g_settings_get_value(s, "sources");
     int found = 0; GVariantIter it; const char *type, *id; g_variant_iter_init(&it, v);
-    while (g_variant_iter_next(&it, "(&s&s)", &type, &id)) if (!strcmp(type, "ibus") && !strcmp(id, "vikey")) found = 1;
+    while (g_variant_iter_next(&it, "(&s&s)", &type, &id)) if (!strcmp(type, "ibus") && !strcmp(id, "kuockey")) found = 1;
     g_variant_unref(v); g_object_unref(s); return found;
 }
-void spawnSelf(const char* arg) { gchar* argv[] = {(gchar*)"vikey-settings", (gchar*)arg, nullptr}; g_spawn_async(nullptr, argv, nullptr, (GSpawnFlags)G_SPAWN_SEARCH_PATH, nullptr, nullptr, nullptr, nullptr); }
+void spawnSelf(const char* arg) { gchar* argv[] = {(gchar*)"kuockey-settings", (gchar*)arg, nullptr}; g_spawn_async(nullptr, argv, nullptr, (GSpawnFlags)G_SPAWN_SEARCH_PATH, nullptr, nullptr, nullptr, nullptr); }
 
 // ---- main window ----------------------------------------------------------------------------------------------
 static GtkWidget* _hint; static GtkWidget* _seg[2]; static GtkWidget* _hotkeyRec; static GtkWidget *_emojiRow, *_emojiRec, *_setupLink, *_loginSw;
@@ -156,26 +155,22 @@ static GtkWidget* switchRow(GtkWidget* group, const char* title, const char* tip
     if (key[0] != '!') _sw[key] = sw; return sw;
 }
 static GtkWidget* group(GtkWidget* page, const char* title) { GtkWidget* g = adw_preferences_group_new(); if (title) adw_preferences_group_set_title(ADW_PREFERENCES_GROUP(g), title); adw_preferences_page_add(ADW_PREFERENCES_PAGE(page), ADW_PREFERENCES_GROUP(g)); return g; }
-static void refreshSetup() { int in = vikeyInInputSources(); gtk_widget_set_visible(_setupLink, in == 0); gtk_widget_set_visible(_hint, in != 0); gtk_switch_set_active(GTK_SWITCH(_loginSw), in != 0); }
+static void refreshSetup() { int in = kuockeyInInputSources(); gtk_widget_set_visible(_setupLink, in == 0); gtk_widget_set_visible(_hint, in != 0); gtk_switch_set_active(GTK_SWITCH(_loginSw), in != 0); }
 static void onSettingsFile(GFileMonitor*, GFile*, GFile*, GFileMonitorEvent, gpointer) { prefs::reload(); syncSeg(); setHint(); }
 
-static void onFeedback(GtkButton*, gpointer) {   // no lambdas in G_CALLBACK (see the Linux compile fixes)
-    g_app_info_launch_default_for_uri("https://vikey.app/feedback?platform=linux&v=" VIKEY_VERSION, nullptr, nullptr);
-}
-
 void buildMain(GtkApplication* app) {
-    GtkWidget* win = adw_application_window_new(app); gtk_window_set_title(GTK_WINDOW(win), "Vikey"); int h = 860;   // every row without scrolling when the screen is tall enough (the Mac window doesn't scroll)
+    GtkWidget* win = adw_application_window_new(app); gtk_window_set_title(GTK_WINDOW(win), "KuocKey"); int h = 860;   // every row without scrolling when the screen is tall enough (the Mac window doesn't scroll)
     if (GListModel* mons = gdk_display_get_monitors(gdk_display_get_default())) if (GdkMonitor* m = (GdkMonitor*)g_list_model_get_item(mons, 0)) { GdkRectangle r; gdk_monitor_get_geometry(m, &r); h = std::min(h, r.height - 110); g_object_unref(m); }
     gtk_window_set_default_size(GTK_WINDOW(win), 480, h);
     GtkWidget* tv = adw_toolbar_view_new(); GtkWidget* hb = adw_header_bar_new(); adw_header_bar_set_show_title(ADW_HEADER_BAR(hb), FALSE); adw_toolbar_view_add_top_bar(ADW_TOOLBAR_VIEW(tv), hb);
     GtkWidget* page = adw_preferences_page_new();
     // header: icon, wordmark + hint (or the IBus setup link), segmented Tiếng Việt / English
     GtkWidget* head = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12); gtk_widget_set_margin_start(head, 12); gtk_widget_set_margin_end(head, 12); gtk_widget_set_margin_bottom(head, 8);
-    GtkWidget* icon = gtk_image_new_from_icon_name("vikey"); gtk_image_set_pixel_size(GTK_IMAGE(icon), 44); gtk_box_append(GTK_BOX(head), icon);
+    GtkWidget* icon = gtk_image_new_from_icon_name("kuockey"); gtk_image_set_pixel_size(GTK_IMAGE(icon), 44); gtk_box_append(GTK_BOX(head), icon);
     GtkWidget* col = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2); gtk_widget_set_hexpand(col, TRUE); gtk_widget_set_valign(col, GTK_ALIGN_CENTER);
     gtk_box_append(GTK_BOX(col), wordmark(22));
     _hint = gtk_label_new(""); gtk_widget_add_css_class(_hint, "dim-label"); gtk_label_set_xalign(GTK_LABEL(_hint), 0); gtk_box_append(GTK_BOX(col), _hint);
-    _setupLink = gtk_button_new_with_label("Thêm Vikey vào nguồn nhập…"); gtk_widget_add_css_class(_setupLink, "link"); gtk_widget_set_halign(_setupLink, GTK_ALIGN_START);   // the Mac's "Cấp quyền Trợ năng…"
+    _setupLink = gtk_button_new_with_label("Thêm KuocKey vào nguồn nhập…"); gtk_widget_add_css_class(_setupLink, "link"); gtk_widget_set_halign(_setupLink, GTK_ALIGN_START);   // the Mac's "Cấp quyền Trợ năng…"
     g_signal_connect(_setupLink, "clicked", G_CALLBACK(+[](GtkButton*, gpointer) { spawnSelf("--guide"); }), nullptr); gtk_box_append(GTK_BOX(col), _setupLink);
     gtk_box_append(GTK_BOX(head), col);
     GtkWidget* seg = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); gtk_widget_add_css_class(seg, "linked"); gtk_widget_set_valign(seg, GTK_ALIGN_CENTER);
@@ -192,10 +187,10 @@ void buildMain(GtkApplication* app) {
     switchRow(g1, "Âm báo khi chuyển", "Phát một âm ngắn mỗi lần bạn bấm phím chuyển Anh/Việt: lên giọng khi sang tiếng Việt, xuống giọng khi sang tiếng Anh.", "!beep", 0, G_CALLBACK(onBeep));
     // auto switch
     GtkWidget* g2 = group(page, "Tự chuyển");
-    switchRow(g2, "Tự chuyển Anh/Việt", "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), Vikey tự sửa từ đó và chuyển chế độ. Bấm Xoá ngay sau đó để hoàn tác.", "AutoSwitchByTyping", 1);
-    switchRow(g2, "Tạm dừng 5 giây", "Khi bạn tự bấm chuyển Anh/Việt, Vikey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn.", "PauseAutoAfterManual", 1);
+    switchRow(g2, "Tự chuyển Anh/Việt", "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), KuocKey tự sửa từ đó và chuyển chế độ. Bấm Xoá ngay sau đó để hoàn tác.", "AutoSwitchByTyping", 1);
+    switchRow(g2, "Tạm dừng 5 giây", "Khi bạn tự bấm chuyển Anh/Việt, KuocKey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn.", "PauseAutoAfterManual", 1);
     // Linux: Wayland gives an input method no app identity, so only X11 apps are told apart (PLAN.md)
-    switchRow(g2, "Nhớ theo ứng dụng", "Vikey nhớ bạn dùng tiếng Anh hay tiếng Việt ở mỗi ứng dụng và tự chuyển lại khi bạn quay về ứng dụng đó. Trên Wayland chỉ với ứng dụng X11.", "UseSmartSwitchKey", 1);
+    switchRow(g2, "Nhớ theo ứng dụng", "KuocKey nhớ bạn dùng tiếng Anh hay tiếng Việt ở mỗi ứng dụng và tự chuyển lại khi bạn quay về ứng dụng đó. Trên Wayland chỉ với ứng dụng X11.", "UseSmartSwitchKey", 1);
     // Vietnamese typing
     GtkWidget* g3 = group(page, "Gõ tiếng Việt");
     GtkWidget* styleRow = row(g3, "Kiểu gõ", "Telex: [ ra ơ, ] ra ư, w ra ư. Telex đơn giản 1: [ ] là dấu ngoặc, w đứng riêng vẫn là w. Telex đơn giản 2: [ ] là dấu ngoặc, w vẫn ra ư. Cả ba kiểu đều gõ uw, ow, aw ra ư, ơ, ă.");
@@ -206,7 +201,7 @@ void buildMain(GtkApplication* app) {
     const char* marks[] = {"hoà, thuý", "hòa, thúy", nullptr}; GtkWidget* dd = gtk_drop_down_new_from_strings(marks); gtk_widget_set_valign(dd, GTK_ALIGN_CENTER); gtk_drop_down_set_selected(GTK_DROP_DOWN(dd), prefs::getInt("ModernOrthography", 1) ? 0 : 1);
     g_signal_connect(dd, "notify::selected", G_CALLBACK(onMark), nullptr); adw_action_row_add_suffix(ADW_ACTION_ROW(markRow), dd);
     switchRow(g3, "Kiểm tra chính tả", "Chỉ bỏ dấu khi từ đang gõ đúng quy tắc chính tả tiếng Việt.", "Spelling", 1);
-    switchRow(g3, "Trả lại phím khi sai", "Khi gõ xong một từ sai chính tả tiếng Việt, Vikey trả lại đúng các phím bạn đã gõ.", "RestoreIfInvalidWord", 1);
+    switchRow(g3, "Trả lại phím khi sai", "Khi gõ xong một từ sai chính tả tiếng Việt, KuocKey trả lại đúng các phím bạn đã gõ.", "RestoreIfInvalidWord", 1);
     // emoji picker
     GtkWidget* g4 = group(page, nullptr);
     switchRow(g4, "Bảng emoji", "Bấm phím tắt để mở bảng emoji ở giữa màn hình. Tìm bằng tiếng Việt hoặc tiếng Anh, gõ Telex vẫn tìm được: \"ngựa\", \"horse\" đều ra 🐴. Enter để chèn, Esc để đóng.", "EmojiPicker", 0);
@@ -214,15 +209,9 @@ void buildMain(GtkApplication* app) {
     _emojiRec = emojiHotkeyRecorder(); adw_action_row_add_suffix(ADW_ACTION_ROW(_emojiRow), _emojiRec);
     // system
     GtkWidget* g5 = group(page, nullptr);
-    // IBus starts Vikey with the session while it is an input source: the switch shows that (set it up in the guide)
+    // IBus starts KuocKey with the session while it is an input source: the switch shows that (set it up in the guide)
     _loginSw = gtk_switch_new(); gtk_widget_set_valign(_loginSw, GTK_ALIGN_CENTER); gtk_widget_set_sensitive(_loginSw, FALSE);
-    GtkWidget* lr = row(g5, "Mở Vikey khi đăng nhập", "IBus tự mở Vikey mỗi khi bạn đăng nhập, khi Vikey có trong Cài đặt › Bàn phím › Nguồn nhập."); adw_action_row_add_suffix(ADW_ACTION_ROW(lr), _loginSw);
-    switchRow(g5, "Tự động cập nhật", "Mỗi ngày Vikey kiểm tra bản mới trên vikey.app và báo cho bạn khi có. Bản mới cài bằng gói .deb/.rpm từ vikey.app.", "AutoUpdate", 1);
-    switchRow(g5, "Tự gửi báo cáo lỗi", "Khi Vikey bị thoát đột ngột, tự gửi báo cáo lỗi lần mở sau mà không hỏi. Báo cáo chỉ có thông tin kỹ thuật: vị trí lỗi trong mã, phiên bản Vikey và Linux. Không có chữ bạn đã gõ.", "CrashReportsAuto", 0);
-    // send feedback (main, 1.0.25): opens vikey.app/feedback in the browser, with the platform and version
-    GtkWidget* fb = row(g5, "Góp ý", "Báo lỗi hoặc góp ý cho Vikey: mở trang vikey.app/feedback trong trình duyệt.");   // same row as the Mac's
-    GtkWidget* fbBtn = gtk_button_new_with_label("Gửi góp ý…"); gtk_widget_set_valign(fbBtn, GTK_ALIGN_CENTER);
-    g_signal_connect(fbBtn, "clicked", G_CALLBACK(onFeedback), nullptr); adw_action_row_add_suffix(ADW_ACTION_ROW(fb), fbBtn);
+    GtkWidget* lr = row(g5, "Mở KuocKey khi đăng nhập", "IBus tự mở KuocKey mỗi khi bạn đăng nhập, khi KuocKey có trong Cài đặt › Bàn phím › Nguồn nhập."); adw_action_row_add_suffix(ADW_ACTION_ROW(lr), _loginSw);
     setHint(); refreshEnabled(); refreshSetup();
     _mainWin = win;
     if (_mainTick) { g_source_remove(_mainTick); _mainTick = 0; }
@@ -296,7 +285,7 @@ static void buildLog(GtkApplication* app) {
 
 // ---- About + Ghi nhận ------------------------------------------------------------------------------------------
 struct Credit { const char *name, *by, *license, *url; };
-// App/Model/Acknowledgements.swift without Sparkle (the Mac's updater; Linux updates come as packages)
+// App/Model/Acknowledgements.swift
 static const Credit kCode[] = {{"OpenKey", "Tuyen Mai", "GPL-3.0", "https://github.com/tuyenvm/OpenKey"}};
 static const Credit kWordData[] = {
     {"FrequencyWords (OpenSubtitles 2018)", "Hermit Dave", "CC BY-SA 4.0", "https://github.com/hermitdave/FrequencyWords"},
@@ -304,7 +293,7 @@ static const Credit kWordData[] = {
     {"HPLT v2", "High Performance Language Technologies", "CC0", "https://hplt-project.org"},
     {"MADLAD-400", "Google", "ODC-By 1.0", "https://huggingface.co/datasets/allenai/MADLAD-400"},
     {"Reddit comments", "tensorshield/reddit_dataset_157", "MIT", "https://huggingface.co/datasets/tensorshield/reddit_dataset_157"},
-    {"Vietnamese forums and reader comments", "VnExpress, Tuổi Trẻ, Tinhte, Otofun, Dạy Nhau Học", "word statistics", "https://vikey.app/acknowledgements"},
+    {"Vietnamese forums and reader comments", "VnExpress, Tuổi Trẻ, Tinhte, Otofun, Dạy Nhau Học", "word statistics", nullptr},
     {"Emoji names and keywords (CLDR)", "Unicode, Inc.", "Unicode License v3", "https://cldr.unicode.org"},
     {"Emojibase", "Miles Johnson", "MIT", "https://emojibase.dev"}};
 static const Credit kTestData[] = {
@@ -322,9 +311,11 @@ template <size_t N> static void creditGroup(GtkWidget* page, const char* title, 
         GtkWidget* r = adw_action_row_new(); adw_preferences_row_set_title(ADW_PREFERENCES_ROW(r), c.name); adw_action_row_set_subtitle(ADW_ACTION_ROW(r), c.by);
         adw_preferences_row_set_use_markup(ADW_PREFERENCES_ROW(r), FALSE);
         GtkWidget* lic = gtk_label_new(c.license); gtk_widget_add_css_class(lic, "dim-label"); gtk_widget_add_css_class(lic, "caption"); adw_action_row_add_suffix(ADW_ACTION_ROW(r), lic);
-        adw_action_row_add_suffix(ADW_ACTION_ROW(r), gtk_image_new_from_icon_name("adw-external-link-symbolic"));
-        gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(r), TRUE); gtk_widget_set_tooltip_text(r, c.url);
-        g_signal_connect(r, "activated", G_CALLBACK(+[](AdwActionRow* r, gpointer) { openUri(gtk_widget_get_tooltip_text(GTK_WIDGET(r))); }), nullptr);
+        if (c.url) {   // no url: credited here only
+            adw_action_row_add_suffix(ADW_ACTION_ROW(r), gtk_image_new_from_icon_name("adw-external-link-symbolic"));
+            gtk_list_box_row_set_activatable(GTK_LIST_BOX_ROW(r), TRUE); gtk_widget_set_tooltip_text(r, c.url);
+            g_signal_connect(r, "activated", G_CALLBACK(+[](AdwActionRow* r, gpointer) { openUri(gtk_widget_get_tooltip_text(GTK_WIDGET(r))); }), nullptr);
+        }
         adw_preferences_group_add(ADW_PREFERENCES_GROUP(g), r);
     }
 }
@@ -332,8 +323,8 @@ static AdwDialog* acknowledgementsDialog() {
     AdwDialog* d = adw_dialog_new(); adw_dialog_set_title(d, "Ghi nhận"); adw_dialog_set_content_width(d, 520); adw_dialog_set_content_height(d, 600);
     GtkWidget* tv = adw_toolbar_view_new(); adw_toolbar_view_add_top_bar(ADW_TOOLBAR_VIEW(tv), adw_header_bar_new());
     GtkWidget* page = adw_preferences_page_new();
-    creditGroup(page, "Mã nguồn", "Vikey dùng mã nguồn của:", kCode);
-    creditGroup(page, "Dữ liệu từ ngữ", "Vikey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.", kWordData);
+    creditGroup(page, "Mã nguồn", "KuocKey dùng mã nguồn của:", kCode);
+    creditGroup(page, "Dữ liệu từ ngữ", "KuocKey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.", kWordData);
     creditGroup(page, "Dữ liệu kiểm thử", "Chỉ dùng để đo và cải thiện độ chính xác, không có trong ứng dụng.", kTestData);
     adw_toolbar_view_set_content(ADW_TOOLBAR_VIEW(tv), page); adw_dialog_set_child(d, tv);
     return d;
@@ -348,63 +339,19 @@ static void presentAlone(GtkApplication* app, AdwDialog* d) {
 void buildAcknowledgements(GtkApplication* app) { presentAlone(app, acknowledgementsDialog()); }
 static void buildAbout(GtkApplication* app) {
     AdwDialog* d = adw_about_dialog_new();
-    adw_about_dialog_set_application_name(ADW_ABOUT_DIALOG(d), "Vikey"); adw_about_dialog_set_application_icon(ADW_ABOUT_DIALOG(d), "vikey"); adw_about_dialog_set_version(ADW_ABOUT_DIALOG(d), VIKEY_VERSION);
-    adw_about_dialog_set_developer_name(ADW_ABOUT_DIALOG(d), "Tony Dinh"); adw_about_dialog_set_website(ADW_ABOUT_DIALOG(d), "https://vikey.app"); adw_about_dialog_set_license_type(ADW_ABOUT_DIALOG(d), GTK_LICENSE_GPL_3_0);
-    adw_about_dialog_set_comments(ADW_ABOUT_DIALOG(d), "Gõ tiếng Việt, tự chuyển Anh/Việt cho bạn.\nDựa trên OpenKey của Tuyen Mai (GPL-3.0).");
-    adw_about_dialog_add_link(ADW_ABOUT_DIALOG(d), "Ghi nhận", "vikey:acknowledgements");
+    adw_about_dialog_set_application_name(ADW_ABOUT_DIALOG(d), "KuocKey"); adw_about_dialog_set_application_icon(ADW_ABOUT_DIALOG(d), "kuockey"); adw_about_dialog_set_version(ADW_ABOUT_DIALOG(d), KUOCKEY_VERSION);
+    adw_about_dialog_set_developer_name(ADW_ABOUT_DIALOG(d), "Tony Dinh"); adw_about_dialog_set_website(ADW_ABOUT_DIALOG(d), "https://kuockey.quocnguyen.dev"); adw_about_dialog_set_license_type(ADW_ABOUT_DIALOG(d), GTK_LICENSE_GPL_3_0);
+    adw_about_dialog_set_comments(ADW_ABOUT_DIALOG(d), "Gõ tiếng Việt, tự chuyển Anh/Việt cho bạn.\nChỉnh sửa bởi Quoc Nguyen.\nDựa trên OpenKey của Tuyen Mai (GPL-3.0).");
+    adw_about_dialog_add_link(ADW_ABOUT_DIALOG(d), "GitHub", "https://github.com/ngminhkuoc/KuocKey");
+    adw_about_dialog_add_link(ADW_ABOUT_DIALOG(d), "Ghi nhận", "kuockey:acknowledgements");
     g_signal_connect(d, "activate-link", G_CALLBACK(+[](AdwAboutDialog* d, const char* uri, gpointer) -> gboolean {
-        if (strcmp(uri, "vikey:acknowledgements")) return FALSE;
+        if (strcmp(uri, "kuockey:acknowledgements")) return FALSE;
         presentAcknowledgements(GTK_WIDGET(d)); return TRUE; }), nullptr);
     presentAlone(app, d);
 }
 
-// ---- update check ----------------------------------------------------------------------------------------------
-// vikey.app/release.json has the Linux version under "linux"; the package manager installs (.deb/.rpm from the site).
-static std::string fetchRelease() {
-    const char* url = getenv("VIKEY_RELEASE_URL"); if (!url || !*url) url = "https://vikey.app/release.json";   // override for tests
-    gchar* argv[] = {(gchar*)"curl", (gchar*)"-fsSL", (gchar*)"--max-time", (gchar*)"15", (gchar*)url, nullptr};
-    gchar* out = nullptr; gint status = 0;
-    if (!g_spawn_sync(nullptr, argv, nullptr, (GSpawnFlags)(G_SPAWN_SEARCH_PATH | G_SPAWN_STDERR_TO_DEV_NULL), nullptr, nullptr, &out, nullptr, &status, nullptr) || status != 0) { g_free(out); return ""; }
-    std::string s = out ? out : ""; g_free(out);
-    size_t p = s.find("\"linux\""); if (p == std::string::npos) return "";
-    p = s.find("\"version\"", p); if (p == std::string::npos) return "";
-    p = s.find('"', s.find(':', p)); size_t e = s.find('"', p + 1); if (p == std::string::npos || e == std::string::npos) return "";
-    return s.substr(p + 1, e - p - 1);
-}
-static bool newer(const std::string& a, const std::string& b) {   // a > b, dotted numbers
-    size_t i = 0, j = 0;
-    while (i < a.size() || j < b.size()) {
-        long x = strtol(a.c_str() + i, nullptr, 10), y = strtol(b.c_str() + j, nullptr, 10);
-        if (x != y) return x > y;
-        i = a.find('.', i); j = b.find('.', j); i = i == std::string::npos ? a.size() : i + 1; j = j == std::string::npos ? b.size() : j + 1;
-    }
-    return false;
-}
-static const char* kDownload = "https://vikey.app/download#linux";
-void checkUpdate(GtkApplication* app, bool quiet) {
-    std::string latest = fetchRelease();
-    if (quiet) {   // the engine's daily check: a notification only when there is a newer version
-        if (latest.empty() || !newer(latest, VIKEY_VERSION)) return;
-        std::string title = "Vikey " + latest + " đã có", body = std::string("Bạn đang dùng bản ") + VIKEY_VERSION + ".";
-        gchar* argv[] = {(gchar*)"notify-send", (gchar*)"-a", (gchar*)"Vikey", (gchar*)"-i", (gchar*)"vikey", (gchar*)"-A", (gchar*)"open=Tải về", (gchar*)title.c_str(), (gchar*)body.c_str(), nullptr};
-        gchar* out = nullptr;
-        if (g_spawn_sync(nullptr, argv, nullptr, (GSpawnFlags)(G_SPAWN_SEARCH_PATH | G_SPAWN_STDERR_TO_DEV_NULL), nullptr, nullptr, &out, nullptr, nullptr, nullptr) && out && g_str_has_prefix(out, "open")) openUri(kDownload);
-        g_free(out); return;
-    }
-    AdwDialog* d;
-    if (latest.empty()) d = adw_alert_dialog_new("Không kiểm tra được cập nhật", "Hãy kiểm tra kết nối mạng rồi thử lại.");
-    else if (newer(latest, VIKEY_VERSION)) d = adw_alert_dialog_new(("Vikey " + latest + " đã có").c_str(), (std::string("Bạn đang dùng bản ") + VIKEY_VERSION + ".").c_str());
-    else d = adw_alert_dialog_new("Đã là bản mới nhất", (std::string("Vikey ") + VIKEY_VERSION + ".").c_str());
-    if (!latest.empty() && newer(latest, VIKEY_VERSION)) {
-        adw_alert_dialog_add_responses(ADW_ALERT_DIALOG(d), "later", "Để sau", "download", "Tải về", nullptr);
-        adw_alert_dialog_set_response_appearance(ADW_ALERT_DIALOG(d), "download", ADW_RESPONSE_SUGGESTED); adw_alert_dialog_set_default_response(ADW_ALERT_DIALOG(d), "download");
-        g_signal_connect(d, "response", G_CALLBACK(+[](AdwAlertDialog*, const char* r, gpointer) { if (!strcmp(r, "download")) openUri(kDownload); }), nullptr);
-    } else adw_alert_dialog_add_responses(ADW_ALERT_DIALOG(d), "ok", "OK", nullptr);
-    presentAlone(app, d);
-}
-
 // ---- entry ------------------------------------------------------------------------------------------------------
-static std::string _mode; static bool _quiet = false, _dialog = false;
+static std::string _mode;
 static void onActivate(GtkApplication* app, gpointer) {
     loadCss();
     if (_mode == "--log") buildLog(app);
@@ -412,14 +359,12 @@ static void onActivate(GtkApplication* app, gpointer) {
     else if (_mode == "--acknowledgements") buildAcknowledgements(app);
     else if (_mode == "--guide") buildGuide(app, false);
     else if (_mode == "--emoji") buildEmoji(app);
-    else if (_mode == "--check-update") checkUpdate(app, _quiet);
-    else if (_mode == "--crash-report") crashReport(app, _dialog);
     else if (!prefs::getInt("OnboardingDone", 0)) buildGuide(app, true);   // first run: the guide, then this window
     else buildMain(app);
 }
 int main(int argc, char** argv) {
-    for (int i = 1; i < argc; i++) { if (!strcmp(argv[i], "--quiet")) _quiet = true; else if (!strcmp(argv[i], "--dialog")) _dialog = true; else if (!strncmp(argv[i], "--", 2)) _mode = argv[i]; }
-    AdwApplication* app = adw_application_new(_mode == "--emoji" ? "app.vikey.Emoji" : "app.vikey.Settings", G_APPLICATION_NON_UNIQUE);
+    for (int i = 1; i < argc; i++) if (!strncmp(argv[i], "--", 2)) _mode = argv[i];
+    AdwApplication* app = adw_application_new(_mode == "--emoji" ? "dev.quocnguyen.kuockey.Emoji" : "dev.quocnguyen.kuockey.Settings", G_APPLICATION_NON_UNIQUE);
     g_signal_connect(app, "activate", G_CALLBACK(onActivate), nullptr);
     return g_application_run(G_APPLICATION(app), 0, nullptr);
 }

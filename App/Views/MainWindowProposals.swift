@@ -22,7 +22,7 @@ enum MainWindowProposals {
         let size = host.fittingSize
         let window = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.titled, .closable, .miniaturizable],
                               backing: .buffered, defer: false)
-        window.title = "Vikey"
+        window.title = "KuocKey"
         window.contentView = host
         host.layoutSubtreeIfNeeded()
         RunLoop.main.run(until: Date().addingTimeInterval(0.4))
@@ -86,9 +86,7 @@ private func on(_ title: String, _ tip: String, _ v: Bool = true) -> some View {
     LabeledContent { HotkeyBox(text: "⌃⌘E") } label: { Tip("Phím mở bảng emoji", "") }
 }
 @ViewBuilder private func generalRows() -> some View {
-    on("Mở Vikey khi đăng nhập", "")
-    on("Tự động cập nhật", "")
-    LabeledContent { Button("Gửi góp ý…") {} } label: { Tip("Góp ý", "") }
+    on("Mở KuocKey khi đăng nhập", "")
 }
 
 // MARK: A — every section folds; a folded one says what's on
@@ -103,7 +101,7 @@ private struct ProposalA: View {
                 fold("auto", "Tự chuyển", "Bật · nhớ theo ứng dụng") { autoRows() }
                 fold("viet", "Gõ tiếng Việt", "hoà, thuý · chính tả · teencode") { vietRows() }
                 fold("emoji", "Bảng emoji", "⌃⌘E") { emojiRows() }
-                fold("general", "Chung", "Mở khi đăng nhập · tự cập nhật") { generalRows() }
+                fold("general", "Chung", "Mở khi đăng nhập") { generalRows() }
             }
             .formStyle(.grouped).scrollDisabled(true).padding(.bottom, 8)
         }
@@ -135,7 +133,7 @@ private struct ProposalA2: View {
                 fold("auto", "Tự chuyển", "Bật · nhớ theo ứng dụng") { autoRows() }
                 fold("viet", "Gõ tiếng Việt", "hoà, thuý · teencode") { vietRows() }
                 fold("emoji", "Bảng emoji", "⌃⌘E") { emojiRows() }
-                fold("general", "Chung", "Tự cập nhật") { generalRows() }
+                fold("general", "Chung", "Mở khi đăng nhập") { generalRows() }
             }
             .formStyle(.grouped).scrollDisabled(true).padding(.bottom, 8)
         }
@@ -168,7 +166,7 @@ private struct ProposalA4: View {
                 fold("auto", "Tự chuyển", "Bật · nhớ theo ứng dụng") { autoRows() }
                 fold("viet", "Gõ tiếng Việt", "hoà, thuý · chính tả · teencode") { vietRows() }
                 fold("emoji", "Bảng emoji", "Bật · ⌃⌘E") { emojiRows() }
-                fold("general", "Chung", "Mở khi đăng nhập · tự cập nhật") { generalRows() }
+                fold("general", "Chung", "Mở khi đăng nhập") { generalRows() }
             }
             .formStyle(.grouped).scrollDisabled(true).padding(.bottom, 8)
         }

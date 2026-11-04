@@ -32,7 +32,7 @@ static bool keyFor(char c, Uint16& key, bool& shift) {
     return false;
 }
 int main(int argc, char** argv) {
-    VikeyDriver d;
+    KuocKeyDriver d;
     vLanguage = (argc > 3 && !strcmp(argv[2], "--start") && !strcmp(argv[3], "en")) ? 0 : 1;
     std::u16string screen;
     FILE* f = fopen(argv[1], "r"); char line[512]; long n = 0;

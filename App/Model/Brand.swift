@@ -23,6 +23,6 @@ struct Wordmark: View {
     var body: some View {
         (Text("Vi").foregroundColor(.primary) + Text("key").foregroundColor(.brand))
             .font(.system(size: size, weight: .bold))
-            .accessibilityLabel("Vikey")
+            .accessibilityLabel("KuocKey")
     }
 }

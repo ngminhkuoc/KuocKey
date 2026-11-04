@@ -14,11 +14,11 @@ val versionCodeFromVersion: Int = marketingVersion.split('.').let { (it[0].toInt
     ((project.findProperty("androidRebuild") as String?)?.toInt() ?: 0)
 
 android {
-    namespace = "app.vikey"
+    namespace = "dev.quocnguyen.kuockey"
     compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
-        applicationId = "app.vikey"
+        applicationId = "dev.quocnguyen.kuockey"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeFromVersion

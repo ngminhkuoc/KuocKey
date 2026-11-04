@@ -3,7 +3,7 @@ import SwiftUI
 
 /// The emoji picker: a hotkey (off by default, set in the main window) opens a panel in the middle of the
 /// screen. Typing searches in English and Vietnamese (EmojiSearch.swift), arrows move, Return types the emoji
-/// into the app you were in, Esc closes. The panel never activates Vikey, so that app keeps its cursor.
+/// into the app you were in, Esc closes. The panel never activates KuocKey, so that app keeps its cursor.
 enum PrefEmoji {
     static let enabled = "EmojiPicker"      // 0/1, read by the core
     static let hotkey = "EmojiHotkey"       // Hotkey raw, 0 = not set
@@ -18,7 +18,7 @@ final class EmojiPicker {
 
     /// At launch: the hotkey handler, and the panel built ahead of time so it opens instantly.
     func install() {
-        VikeyCore.setEmojiHotkeyHandler { [weak self] in self?.toggle() }
+        KuocKeyCore.setEmojiHotkeyHandler { [weak self] in self?.toggle() }
         DispatchQueue.global(qos: .userInitiated).async { EmojiIndex.shared.prepareSearch() }   // the Mac panel opens on a search box
         DispatchQueue.main.async { if UserDefaults.standard.integer(forKey: PrefEmoji.enabled) != 0 { self.prepare() } }
     }
@@ -35,17 +35,17 @@ final class EmojiPicker {
     func open() {
         prepare()
         guard let p = panel else { return }
-        model.reset(vietnamese: VikeyCore.language() == 1)
+        model.reset(vietnamese: KuocKeyCore.language() == 1)
         let screen = NSScreen.screens.first { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) } ?? NSScreen.main
         if let f = screen?.visibleFrame {
             p.setFrameOrigin(NSPoint(x: f.midX - p.frame.width / 2, y: f.midY - p.frame.height / 2 + f.height * 0.08))
         }
-        VikeyCore.setEmojiPickerOpen(true)
+        KuocKeyCore.setEmojiPickerOpen(true)
         p.makeKeyAndOrderFront(nil)
     }
 
     func close() {
-        VikeyCore.setEmojiPickerOpen(false)
+        KuocKeyCore.setEmojiPickerOpen(false)
         panel?.orderOut(nil)
     }
 
@@ -54,7 +54,7 @@ final class EmojiPicker {
         let text = e.withSkin(model.tone)
         model.remember(e)
         close()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { VikeyCore.insertText(text) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { KuocKeyCore.insertText(text) }
     }
 }
 
@@ -168,9 +168,9 @@ final class EmojiPickerModel: ObservableObject {
     lazy var groups: [(Int, [Emoji])] = Dictionary(grouping: all, by: \.group).sorted { $0.key < $1.key }.map { ($0.key, $0.value) }
 
     init() {
-        observer = NotificationCenter.default.addObserver(forName: .VikeyLanguageDidChange, object: nil, queue: .main) { [weak self] _ in
+        observer = NotificationCenter.default.addObserver(forName: .KuocKeyLanguageDidChange, object: nil, queue: .main) { [weak self] _ in
             guard let self else { return }
-            self.vietnamese = VikeyCore.language() == 1; self.search()
+            self.vietnamese = KuocKeyCore.language() == 1; self.search()
         }
     }
 

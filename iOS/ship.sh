@@ -1,5 +1,5 @@
 #!/bin/bash
-# Vikey iOS → TestFlight. Unsigned archive → sign the keyboard extension, then the app, each with
+# KuocKey iOS → TestFlight. Unsigned archive → sign the keyboard extension, then the app, each with
 # its App Store profile's entitlements → IPA → altool upload. Bump CURRENT_PROJECT_VERSION first.
 # NO_UPLOAD=1 stops after signing (QA the IPA).
 set -euo pipefail
@@ -13,15 +13,15 @@ echo "==> engine rule lock"
 
 echo "==> regenerate + clean"
 xcodegen generate >/dev/null
-rm -rf build/Vikey.xcarchive build/ship
+rm -rf build/KuocKey.xcarchive build/ship
 
 echo "==> unsigned archive"
-xcodebuild archive -project VikeyiOS.xcodeproj -scheme Vikey -configuration Release \
-  -destination 'generic/platform=iOS' -archivePath build/Vikey.xcarchive \
+xcodebuild archive -project KuocKeyiOS.xcodeproj -scheme KuocKey -configuration Release \
+  -destination 'generic/platform=iOS' -archivePath build/KuocKey.xcarchive \
   CODE_SIGN_STYLE=Manual CODE_SIGNING_ALLOWED=NO >/dev/null
 
-APP="build/Vikey.xcarchive/Products/Applications/Vikey.app"
-EXT="$APP/PlugIns/VikeyKeyboard.appex"
+APP="build/KuocKey.xcarchive/Products/Applications/KuocKey.app"
+EXT="$APP/PlugIns/KuocKeyKeyboard.appex"
 VER=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist")
 echo "==> archived build $VER"
 ls "$APP" | grep -q Assets.car || { echo "FAIL: no Assets.car (app icon)"; exit 1; }
@@ -36,19 +36,19 @@ sign() {   # sign <bundle> <profile>
   codesign --force --sign "$CERT" --keychain "$KC" --entitlements build/ent.plist --timestamp=none "$1"
 }
 echo "==> sign"
-sign "$EXT" "$S/AppStore_com.devuap.vikey.ios.keyboard.mobileprovision"
-sign "$APP" "$S/AppStore_com.devuap.vikey.ios.mobileprovision"
+sign "$EXT" "$S/AppStore_dev.quocnguyen.kuockey.ios.keyboard.mobileprovision"
+sign "$APP" "$S/AppStore_dev.quocnguyen.kuockey.ios.mobileprovision"
 codesign --verify --deep --strict "$APP"
 for b in "$APP" "$EXT"; do
-  codesign -d --entitlements :- "$b" 2>/dev/null | grep -q group.com.devuap.vikey || { echo "FAIL: app group missing in $b"; exit 1; }
+  codesign -d --entitlements :- "$b" 2>/dev/null | grep -q group.dev.quocnguyen.kuockey || { echo "FAIL: app group missing in $b"; exit 1; }
 done
 echo "    entitlements ok (app group in app + keyboard)"
 
 echo "==> package"
 mkdir -p build/ship/Payload && cp -R "$APP" build/ship/Payload/
-( cd build/ship && zip -qry Vikey.ipa Payload )
-[ -n "${NO_UPLOAD:-}" ] && { echo "==> NO_UPLOAD: build/ship/Vikey.ipa"; exit 0; }
+( cd build/ship && zip -qry KuocKey.ipa Payload )
+[ -n "${NO_UPLOAD:-}" ] && { echo "==> NO_UPLOAD: build/ship/KuocKey.ipa"; exit 0; }
 
 echo "==> upload"
-xcrun altool --upload-app -f build/ship/Vikey.ipa -t ios --apiKey 3QNAF6H8AT --apiIssuer 6587ae6d-4945-468e-8879-d58b7a6d33ad 2>&1 | tail -4
+xcrun altool --upload-app -f build/ship/KuocKey.ipa -t ios --apiKey 3QNAF6H8AT --apiIssuer 6587ae6d-4945-468e-8879-d58b7a6d33ad 2>&1 | tail -4
 echo "==> uploaded build $VER"

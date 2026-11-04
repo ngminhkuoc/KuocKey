@@ -1,4 +1,4 @@
-# Simple Telex 1 (VIKEY_TELEX_STYLE=1, D56): [ and ] are brackets, a lone w stays w.
+# Simple Telex 1 (KUOCKEY_TELEX_STYLE=1, D56): [ and ] are brackets, a lone w stays w.
 # rule	start(1=VN,0=EN)	keys ('<'=Backspace, '|'=Enter)	expected text	final lang	why
 D56	1	[	[	1	a lone [ is a bracket
 D56	1	]	]	1	a lone ] is a bracket

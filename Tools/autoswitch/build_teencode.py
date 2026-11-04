@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Builds Engine/TeencodeData.h: the teencode words Vikey keeps when "teencode spelling" is on (D53).
+"""Builds Engine/TeencodeData.h: the teencode words KuocKey keeps when "teencode spelling" is on (D53).
 A word typed with a teencode-only rule (z/dz for d, open "ie"/"oy", k after i/ư) stays only if it is here;
 anything else goes back to its keys like any invalid word ("zero" doesn't become "zẻo").
 Sources: ViSoLex dictionary.json (MIT, © 2024 HaDung2002, github.com/HaDung2002/visolex) and words that occur
-at least twice in Vikey's private chat/forum data (counts only, no text). Re-run with both present."""
+at least twice in KuocKey's private chat/forum data (counts only, no text). Re-run with both present."""
 import glob, json, os, re, unicodedata, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
 PAT = re.compile(r'^(z|dz)|òy$|[iìíỉĩị]e$|[iíìịỉĩ]k$|[ưừứửữự]k$')
@@ -34,7 +34,7 @@ vis = '/tmp/claude-501/visolex/dict/dictionary.json'
 if os.path.exists(vis):
     words |= {unicodedata.normalize('NFC', k.lower()) for k in json.load(open(vis))}
 cnt = collections.Counter()
-for f in glob.glob(os.path.expanduser('~/Work/vikey-data/real/*.txt')) + glob.glob(os.path.expanduser('~/Work/vikey-data/real/fresh/*.txt')):
+for f in glob.glob(os.path.expanduser('~/Work/kuockey-data/real/*.txt')) + glob.glob(os.path.expanduser('~/Work/kuockey-data/real/fresh/*.txt')):
     for w in re.findall(r'[^\W\d_]+', open(f, encoding='utf-8', errors='ignore').read().lower()):
         cnt[unicodedata.normalize('NFC', w)] += 1
 words |= {w for w, c in cnt.items() if c >= 2}

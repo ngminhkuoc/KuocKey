@@ -1,16 +1,16 @@
 //
 //  Driver.h
-//  Vikey
+//  KuocKey
 //
 //  Everything a platform keeps around the engine, without the platform: the English-mode word
 //  buffer, auto switch both ways, the end-of-word fix after a doubled tone key, Backspace undo of
 //  an auto-fix, and the pause after a manual switch. A keyboard sends keys in and applies the
 //  returned edits. Used by the iOS keyboard and by the simulator (so the simulator tests it).
-//  Mirrors App/Core/VikeyCore.mm, which does the same inside the macOS event tap.
+//  Mirrors App/Core/KuocKeyCore.mm, which does the same inside the macOS event tap.
 //
 
-#ifndef VikeyDriver_h
-#define VikeyDriver_h
+#ifndef KuocKeyDriver_h
+#define KuocKeyDriver_h
 
 #include "Engine.h"
 #include <string>
@@ -21,9 +21,9 @@ struct VKEdit {
     bool languageChanged = false;
 };
 
-class VikeyDriver {
+class KuocKeyDriver {
 public:
-    VikeyDriver();
+    KuocKeyDriver();
     /** A key press (letters, digits, punctuation, KEY_SPACE, KEY_RETURN, KEY_DELETE). now: seconds, any clock. */
     VKEdit press(Uint16 key, bool shift, double now = 0);
     /** The user switched language by hand (VI/EN key). */

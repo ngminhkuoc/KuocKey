@@ -1,7 +1,7 @@
 import UIKit
 
-/// The strip's corner: one element for both the VI/EN switch and the Vikey mark (Tony picked design A, 2026-11-02).
-/// When the keyboard comes up it opens as [Vi] Vikey with the letters springing in, then folds its letters down into
+/// The strip's corner: one element for both the VI/EN switch and the KuocKey mark (Tony picked design A, 2026-11-02).
+/// When the keyboard comes up it opens as [Vi] KuocKey with the letters springing in, then folds its letters down into
 /// VI / EN. A switch unfurls the language's name ("Tiếng Việt", "English") for a moment, then folds back.
 /// Purely visual: KeyboardView routes taps on the corner to the language key under it.
 final class LangMarkView: UIView {
@@ -25,7 +25,7 @@ final class LangMarkView: UIView {
     private let langLabel = UILabel()
     private let tile = UIView()
     private let tileLabel = UILabel()
-    private let letters: [UILabel] = "Vikey".enumerated().map { i, c in
+    private let letters: [UILabel] = "KuocKey".enumerated().map { i, c in
         let l = UILabel(); l.text = String(c); l.font = .systemFont(ofSize: 16.5, weight: .bold); l.tag = i; l.sizeToFit(); return l
     }
 
