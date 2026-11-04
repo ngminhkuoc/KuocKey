@@ -72,11 +72,11 @@ static int textWidth(HDC dc, HFONT f, const std::wstring& s) { SelectObject(dc, 
 static int textHeight(HFONT f, const std::wstring& s, int width) {   // wrapped height
     HDC dc = GetDC(nullptr); SelectObject(dc, f); RECT r = {0, 0, width, 0}; DrawTextW(dc, s.c_str(), -1, &r, DT_CALCRECT | DT_WORDBREAK | DT_NOPREFIX); ReleaseDC(nullptr, dc); return r.bottom;
 }
-/// "Vi" in the text colour, "key" in brand indigo, bold (Brand.swift Wordmark).
+/// "Kuoc" in the text colour, "Key" in brand indigo, bold (Brand.swift Wordmark).
 static void drawWordmark(HDC dc, HFONT f, int x, int y) {
     SelectObject(dc, f); SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, TEXT); TextOutW(dc, x, y, L"Vi", 2);
-    SetTextColor(dc, BRAND); TextOutW(dc, x + textWidth(dc, f, L"Vi"), y, L"key", 3);
+    SetTextColor(dc, TEXT); TextOutW(dc, x, y, L"Kuoc", 4);
+    SetTextColor(dc, BRAND); TextOutW(dc, x + textWidth(dc, f, L"Kuoc"), y, L"Key", 3);
 }
 /// Text that may hold emoji: DirectWrite draws colour glyphs (GDI draws them black and white).
 static void colorText(HDC dc, const std::wstring& s, RECT r, float px, COLORREF c) {

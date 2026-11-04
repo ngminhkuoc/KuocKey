@@ -9,14 +9,14 @@ Code that implements it: `App/Model/Brand.swift` (Mac + iOS), `site/style.css` (
 - In running text the name is plain text in the surrounding font and color: "KuocKey tự chuyển…".
 
 ## Wordmark
-- "Vi" in ink, "key" in brand indigo, same font, **bold (700)**, no letter-spacing, never all caps.
+- "Kuoc" in ink, "Key" in brand indigo, same font, **bold (700)**, no letter-spacing, never all caps.
 - Use it wherever the name stands alone as a logo: website header, demo labels, app window/screen headers, About.
 - Usually next to the icon, gap ≈ 0.3 × the text height.
 
 | | Light | Dark |
 |---|---|---|
-| "Vi" (ink) | `#111318` | white / label color |
-| "key" (brand indigo) | `#4F46E5` | `#8C87FF` |
+| "Kuoc" (ink) | `#111318` | white / label color |
+| "Key" (brand indigo) | `#4F46E5` | `#8C87FF` |
 
 ## Colors
 - **Brand indigo** `#4F46E5` (dark mode `#8C87FF`), hover/pressed `#4338CA`. The only accent color: buttons, links, the wordmark, highlights.
@@ -29,7 +29,7 @@ Code that implements it: `App/Model/Brand.swift` (Mac + iOS), `site/style.css` (
 - Headlines 800 (web) / bold (apps); body regular. Short lines, no orphans, no split phrases ([[feedback_no_weird_line_breaks]]).
 
 ## Icon
-- `design/KuocKey.icns` / AppIcon: white "Vi" on an indigo rounded square. Don't recolor, outline or put it on a busy background.
+- `design/KuocKey.icns` / AppIcon: a K turned on its side as a roof over "uoc", with a keyhole for the o, white on the indigo rounded square. At 32 px and below it is just the roof and keyhole. Masters (SVG, Nunito outlined) are in `design/icon/`. Don't recolor, outline or put it on a busy background.
 - Small sizes: 16-34 px with a radius of ~22% of the size.
 
 ## Voice

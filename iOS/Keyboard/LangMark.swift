@@ -1,7 +1,7 @@
 import UIKit
 
 /// The strip's corner: one element for both the VI/EN switch and the KuocKey mark (Tony picked design A, 2026-11-02).
-/// When the keyboard comes up it opens as [Vi] KuocKey with the letters springing in, then folds its letters down into
+/// When the keyboard comes up it opens as [roof mark] KuocKey with the letters springing in, then folds its letters down into
 /// VI / EN. A switch unfurls the language's name ("Tiếng Việt", "English") for a moment, then folds back.
 /// Purely visual: KeyboardView routes taps on the corner to the language key under it.
 final class LangMarkView: UIView {
@@ -24,7 +24,7 @@ final class LangMarkView: UIView {
     private let capsule = UIView()
     private let langLabel = UILabel()
     private let tile = UIView()
-    private let tileLabel = UILabel()
+    private let tileMark = KuocMarkView()
     private let letters: [UILabel] = "KuocKey".enumerated().map { i, c in
         let l = UILabel(); l.text = String(c); l.font = .systemFont(ofSize: 16.5, weight: .bold); l.tag = i; l.sizeToFit(); return l
     }
@@ -36,9 +36,8 @@ final class LangMarkView: UIView {
         langLabel.textAlignment = .center
         langLabel.font = .systemFont(ofSize: 15, weight: .bold)
         tile.layer.cornerCurve = .continuous
-        tileLabel.textAlignment = .center
-        tileLabel.textColor = .white
-        tile.addSubview(tileLabel)
+        tileMark.backgroundColor = .clear   // the tile carries the indigo
+        tile.addSubview(tileMark)
         addSubview(capsule); capsule.addSubview(langLabel); capsule.addSubview(tile)
         letters.forEach { capsule.addSubview($0) }
         restyle()
@@ -73,7 +72,7 @@ final class LangMarkView: UIView {
     private func restyle() {
         langLabel.textColor = brand
         tile.backgroundColor = indigo
-        letters.forEach { $0.textColor = $0.tag >= 2 ? brand : ink }
+        letters.forEach { $0.textColor = $0.tag >= 4 ? brand : ink }
         if !introRunning { capsule.backgroundColor = vietnamese ? tint : keyFill }
     }
 
@@ -118,7 +117,7 @@ final class LangMarkView: UIView {
             langLabel.alpha = 0
             tile.frame = CGRect(x: 12, y: (H - tileS) / 2, width: tileS, height: tileS)
             tile.layer.cornerRadius = 6
-            tileLabel.frame = tile.bounds; tileLabel.text = "Vi"; tileLabel.font = .systemFont(ofSize: 10.5, weight: .heavy)
+            tileMark.frame = tile.bounds
             tile.alpha = 1; tile.transform = CGAffineTransform(scaleX: 0.01, y: 0.01).rotated(by: -.pi / 3)
             var x = 12 + tileS + 7
             for l in letters {
@@ -141,8 +140,8 @@ final class LangMarkView: UIView {
     }
 
     private func morphCollapse(_ g: Int) {
-        // "key" drops away right to left, the tile spins out, "Vi" settles into the pill as VI
-        for (n, l) in letters.reversed().enumerated() where l.tag >= 2 {
+        // "uocKey" drops away right to left, the mark tile spins out, "K" settles into the pill, then VI/EN
+        for (n, l) in letters.reversed().enumerated() where l.tag >= 1 {
             UIView.animate(withDuration: 0.28, delay: Double(n) * 0.04, options: .curveEaseIn) {
                 l.alpha = 0; l.transform = CGAffineTransform(translationX: 0, y: 9).scaledBy(x: 0.7, y: 0.7)
             }
@@ -150,7 +149,7 @@ final class LangMarkView: UIView {
         UIView.animate(withDuration: 0.3, delay: 0.05, options: .curveEaseIn) {
             self.tile.alpha = 0; self.tile.transform = CGAffineTransform(scaleX: 0.2, y: 0.2).rotated(by: .pi / 2)
         }
-        let vi = letters.filter { $0.tag < 2 }
+        let vi = letters.filter { $0.tag < 1 }
         let target = CGPoint(x: pillWidth / 2, y: bounds.height / 2)
         UIView.animate(withDuration: 0.5, delay: 0.12, usingSpringWithDamping: 0.75, initialSpringVelocity: 0) {
             self.capsule.frame.size.width = self.pillWidth

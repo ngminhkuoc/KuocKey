@@ -818,18 +818,12 @@ final class SuggestionBar: UIView {
     /// The brand on the right of an empty strip (Tony): the icon and the wordmark, as in the Mac emoji panel.
     private let mark = UIView()
     var showsBrand = true { didSet { if showsBrand != oldValue { restyle() } } }
-    private let markIcon = UILabel()
+    private let markIcon = KuocMarkView()
     private let markText = UILabel()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        markIcon.text = "Vi"
-        markIcon.font = .systemFont(ofSize: 10, weight: .bold)
-        markIcon.textColor = .white
-        markIcon.textAlignment = .center
         markIcon.layer.cornerRadius = 5
-        markIcon.layer.cornerCurve = .continuous
-        markIcon.layer.masksToBounds = true
         mark.addSubview(markIcon); mark.addSubview(markText)
         mark.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapBrand)))   // opens the KuocKey app (Tony)
         mark.isAccessibilityElement = true
@@ -860,9 +854,8 @@ final class SuggestionBar: UIView {
     private func restyle() {
         let fg: UIColor = dark ? .white : .black
         let indigo: UIColor = dark ? UIColor(red: 0.549, green: 0.529, blue: 1, alpha: 1) : UIColor(red: 0.310, green: 0.275, blue: 0.898, alpha: 1)
-        markIcon.backgroundColor = UIColor(red: 0.310, green: 0.275, blue: 0.898, alpha: 1)   // the app icon's indigo in both modes
-        let word = NSMutableAttributedString(string: "Vi", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: fg])
-        word.append(NSAttributedString(string: "key", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: indigo]))
+        let word = NSMutableAttributedString(string: "Kuoc", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: fg])
+        word.append(NSAttributedString(string: "Key", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: indigo]))
         markText.attributedText = word
         mark.isHidden = !items.isEmpty || !showsBrand   // only on an empty strip
         for (i, b) in cells.enumerated() {

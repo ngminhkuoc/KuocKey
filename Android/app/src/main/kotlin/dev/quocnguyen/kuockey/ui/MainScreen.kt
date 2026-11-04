@@ -195,7 +195,7 @@ private fun appLanguageName(c: android.content.Context): String {
 }
 
 @Composable fun Wordmark(size: androidx.compose.ui.unit.TextUnit) {
-    Row { Text("Vi", fontSize = size, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground); Text("key", fontSize = size, fontWeight = FontWeight.Bold, color = brand) }
+    Row { Text("Kuoc", fontSize = size, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground); Text("Key", fontSize = size, fontWeight = FontWeight.Bold, color = brand) }
 }
 
 @Composable fun SectionTitle(t: String) = Text(t.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 16.dp, bottom = 6.dp))
