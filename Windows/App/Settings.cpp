@@ -908,7 +908,7 @@ void showTypingLog(HINSTANCE inst) {
 // ---- Bảng gõ tắt window: the shortcut table, with CSV import and export ------------------------------------
 // Settings: UseMacro (on), MacroVietnameseOnly (off, so shortcuts work in both languages). The table itself is
 // core::macros(), saved to macros.csv after every change. The file is the same CSV the import and export use.
-enum { M_ON = 600, M_VI, M_LIST, M_KEY, M_TEXT, M_SAVE, M_DEL, M_IMPORT, M_EXPORT, M_STATUS, M_HINT };
+enum { M_ON = 600, M_VI, M_LIST, M_KEY, M_TEXT, M_SAVE, M_DEL, M_IMPORT, M_EXPORT, M_STATUS, M_HINT, M_NEW };
 static HWND _macWin, _macList, _macKey, _macText;
 static std::vector<macro::Entry> _macRows;   // the list as shown, sorted by shortcut
 static const int MW = 560, MH = 520, MP = 20;
@@ -985,6 +985,11 @@ static LRESULT CALLBACK macroProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
         case M_VI: prefs::setInt(L"MacroVietnameseOnly", toggleOn(c)); core::reloadSettings(); break;
         case M_SAVE: macSave(); break;
         case M_DEL: macDelete(); break;
+        case M_NEW:
+            ListView_SetItemState(_macList, -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+            SetWindowTextW(_macKey, L""); SetWindowTextW(_macText, L"");
+            EnableWindow(GetDlgItem(h, M_DEL), FALSE); macStatus(L"");
+            SetFocus(_macKey); break;
         case M_IMPORT: macImport(); break;
         case M_EXPORT: macExport(); break;
         }
@@ -1019,7 +1024,7 @@ void showMacros(HINSTANCE inst) {
     HWND on = kid(L"KuocKeyToggle", L"", WS_TABSTOP, tx, 16, 40, 23, M_ON); setBg(on, GROUP); setToggle(on, prefs::getInt(L"UseMacro", 1) != 0);
     kid(L"STATIC", L"Chỉ thay khi đang gõ tiếng Việt", SS_LEFT | SS_NOPREFIX, MP, 52, 400, 20, 0);
     HWND vi = kid(L"KuocKeyToggle", L"", WS_TABSTOP, tx, 50, 40, 23, M_VI); setBg(vi, GROUP); setToggle(vi, prefs::getInt(L"MacroVietnameseOnly", 0) != 0);
-    kid(L"STATIC", L"Gõ chữ tắt rồi bấm Cách, Enter, Tab hoặc dấu câu (. , ; : ! ? ) \") để đổi thành đoạn chữ dài. Không phân biệt hoa thường. Bấm Xoá ngay sau đó để hoàn tác. Khi gõ tiếng Việt, chữ tắt là chữ hiện trên màn hình (đc gõ là ddc).",
+    kid(L"STATIC", L"Gõ chữ tắt rồi bấm Cách, Enter, Tab hoặc dấu câu (. , ; : ! ? ) \") để đổi thành đoạn chữ dài. Không phân biệt hoa thường. Bấm Cách thì không thêm dấu cách sau đoạn chữ. Bấm Xoá ngay sau dấu câu để hoàn tác. Khi gõ tiếng Việt, chữ tắt là chữ hiện trên màn hình (đc gõ là ddc).",
         SS_LEFT | SS_NOPREFIX, MP, 86, MW - 2 * MP, 54, M_HINT, fSmall);
     _macList = kid(WC_LISTVIEWW, L"", LVS_REPORT | LVS_NOSORTHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP, MP, 146, MW - 2 * MP, 190, M_LIST);
     ListView_SetExtendedListViewStyle(_macList, LVS_EX_FULLROWSELECT);
@@ -1032,7 +1037,7 @@ void showMacros(HINSTANCE inst) {
     SendMessageW(_macKey, EM_SETLIMITTEXT, macro::MAX_KEY, 0); SendMessageW(_macText, EM_SETLIMITTEXT, macro::MAX_TEXT * 2, 0);
     SendMessageW(_macKey, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(6, 6)); SendMessageW(_macText, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(6, 6));
     auto button = [&](const wchar_t* text, bool prominent, int x, int w, int id) { HWND b = kid(L"KuocKeyButton", text, WS_TABSTOP, x, 446, w, 30, id); SetWindowLongPtrW(b, GWLP_USERDATA, prominent); setBg(b, GROUP); return b; };
-    button(L"Thêm / Cập nhật", true, MP, 130, M_SAVE); button(L"Xoá", false, MP + 138, 70, M_DEL);
+    button(L"Thêm / Cập nhật", true, MP, 130, M_SAVE); button(L"Xoá", false, MP + 138, 70, M_DEL); button(L"Mới", false, MP + 216, 70, M_NEW);
     button(L"Xuất CSV…", false, MW - MP - 110, 110, M_EXPORT); button(L"Nhập CSV…", false, MW - MP - 110 - 8 - 110, 110, M_IMPORT);
     kid(L"STATIC", L"", SS_LEFT | SS_NOPREFIX, MP, 488, MW - 2 * MP, 20, M_STATUS, fSmall);
     refreshMacroList();

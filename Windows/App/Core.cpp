@@ -563,11 +563,12 @@ static bool MacroExpand(const macro::Entry& e) {
         if (!(c >= 0xDC00 && c <= 0xDFFF)) typed++;   // the second half of a surrogate pair is no new character
     }
     WORD vk = _keyVk ? (WORD)_keyVk : vkOf(_keycode);
-    if (vk) batchKey(vk, _keyExtended);   // the key as the user pressed it (Shift is still held, so ? stays ?)
+        // Space only triggers the replacement: no space is added after the text (the user can type it themselves)
+    if (vk && _keycode != KEY_SPACE) batchKey(vk, _keyExtended);   // the key as the user pressed it (Shift is still held, so ? stays ?)
     flushBatch();
     ResetEnglishWord(true); startNewSession();
-    // Backspace next puts the shortcut and the key back; not after Enter or Tab, which may have sent a message or left the field
-    if (typed > 0 && _mcCh && !(IsWhitespaceKey(_keycode) && _keycode != KEY_SPACE)) {
+    // Backspace next puts the shortcut and the key back; not after Space (a plain Backspace there), Enter or Tab (may have sent a message or left the field)
+    if (typed > 0 && _mcCh && !IsWhitespaceKey(_keycode)) {
         _autoFixUndo.active = true; _autoFixUndo.fromMacro = true; _autoFixUndo.language = vLanguage;
         _autoFixUndo.removeCount = typed + 1; _autoFixUndo.keyCount = 0;
         int n = 0;
