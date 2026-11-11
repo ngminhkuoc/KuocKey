@@ -11,6 +11,7 @@
 #include "Emoji.h"
 #include "resource.h"
 #include <commctrl.h>
+#include <commdlg.h>
 #include <windowsx.h>
 #include <shellapi.h>
 #include <objidl.h>
@@ -26,6 +27,7 @@ namespace Gdiplus { using std::min; using std::max; }
 #include <fstream>
 #include <functional>
 #pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "comdlg32.lib")
 #pragma comment(lib, "gdiplus.lib")
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
