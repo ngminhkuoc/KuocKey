@@ -11,7 +11,25 @@ static int failures = 0;
 
 static std::vector<Entry> parse(const char* utf8, int* skipped = nullptr) { return parseCsv(utf8, skipped); }
 
+static void dump(const char* what, const std::wstring& w) {
+    printf("DIAG %s:", what);
+    for (wchar_t c : w) printf(" %04x", (unsigned)c);
+    printf("
+");
+}
+static void dumpRows(const char* what, const std::vector<Entry>& r) {
+    printf("DIAG %s: %d rows
+", what, (int)r.size());
+    for (auto& e : r) { dump("  key", e.key); dump("  text", e.text); }
+}
+
 int main() {
+    dump("fold(D-stroke C)", fold(L"ĐC"));
+    dump("fold(d-stroke c)", fold(L"đc"));
+    dump("fold(e+acute)", fold(L"é"));
+    dump("fold(e-acute)", fold(L"é"));
+    dumpRows("vn csv", parseCsv("Äc,ÄÆ°á»£c
+"));
     // lookup ignores case and Unicode composition
     {
         Table t;
