@@ -11,6 +11,7 @@
 #include "Emoji.h"
 #include "resource.h"
 #include <commctrl.h>
+#include <commdlg.h>
 #include <windowsx.h>
 #include <shellapi.h>
 #include <objidl.h>
@@ -26,6 +27,7 @@ namespace Gdiplus { using std::min; using std::max; }
 #include <fstream>
 #include <functional>
 #pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "comdlg32.lib")
 #pragma comment(lib, "gdiplus.lib")
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
@@ -303,7 +305,7 @@ static void startRecording(HWND c) { if (Recorder* r = rec(c)) { SetFocus(c); r-
 static void destroyChildren(HWND h) { std::vector<HWND> kids; for (HWND c = GetWindow(h, GW_CHILD); c; c = GetWindow(c, GW_HWNDNEXT)) kids.push_back(c); for (HWND c : kids) DestroyWindow(c); }
 
 // ---- main window -----------------------------------------------------------------------------
-enum { C_SEG = 200, C_HOTKEY, C_BEEP, C_AUTO, C_PAUSE, C_SMART, C_SITE, C_MARK, C_SPELL, C_RESTORE, C_LOGIN, C_LOGKEYS, C_EMOJI, C_EMOJIKEY, C_STYLE,
+enum { C_SEG = 200, C_HOTKEY, C_BEEP, C_AUTO, C_PAUSE, C_SMART, C_SITE, C_MARK, C_SPELL, C_RESTORE, C_LOGIN, C_LOGKEYS, C_EMOJI, C_EMOJIKEY, C_STYLE, C_MACRO,
        L_REFRESH = 300, L_OPEN, L_CLEAR, A_LINK = 400, O_BACK = 500, O_NEXT, O_REC, O_BEEP, O_EMOJI, O_EMOJIKEY, O_EDIT = 520 };
 static const UINT WM_REBUILD = WM_APP + 20;
 static HWND _win, _seg, _hint, _logWin, _logList, _logSummary, _logGrid, _aboutWin, _onbWin, _ackWin, _tooltip;
@@ -398,6 +400,10 @@ static void buildMain() {
     if (emojiOn) emojiRec = recorderRow(L"Phím mở bảng emoji", L"Một phím kèm Ctrl, Alt hoặc Win, ví dụ Ctrl+Alt+E. Bấm vào ô để đặt phím khác.", L"EmojiHotkey", false, emojiKey, C_EMOJIKEY);
     endGroup();
     beginGroup(nullptr);
+    HWND macroBtn = row(L"Bảng gõ tắt", L"Gõ chữ tắt rồi bấm Cách, Enter hoặc dấu câu, KuocKey đổi thành đoạn chữ dài đã đặt, giống thay thế văn bản trên iOS. Có nhập và xuất file CSV.", L"KuocKeyButton", C_MACRO, 90, 28, WS_TABSTOP);
+    SetWindowTextW(macroBtn, L"Mở…"); setBg(macroBtn, GROUP);
+    endGroup();
+    beginGroup(nullptr);
     toggleRow(L"Mở KuocKey khi đăng nhập", L"Tự mở KuocKey mỗi khi bạn đăng nhập vào Windows.", C_LOGIN, prefs::launchAtLogin());
     endGroup();
     refreshEnabled();
@@ -427,6 +433,7 @@ static LRESULT CALLBACK mainProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
         case C_SPELL: flag(L"Spelling"); break;
         case C_RESTORE: flag(L"RestoreIfInvalidWord"); break;
         case C_EMOJI: prefs::setInt(L"EmojiPicker", toggleOn(c)); core::reloadSettings(); emoji::settingsChanged(); afterHotkeyChange(); break;
+        case C_MACRO: showMacros(_inst); break;
         case C_LOGIN: prefs::setLaunchAtLogin(toggleOn(c)); setToggle(c, prefs::launchAtLogin()); break;
         }
         return 0; }
@@ -896,6 +903,140 @@ void showTypingLog(HINSTANCE inst) {
     child(L"BUTTON", L"Làm mới", 0, 20, 556, 90, 28, L_REFRESH, fBody); child(L"BUTTON", L"Mở file log", 0, 118, 556, 100, 28, L_OPEN, fBody); child(L"BUTTON", L"Xoá log…", 0, 640, 556, 100, 28, L_CLEAR, fBody);
     _win = old;
     refreshLog(); centerOnMouseScreen(_logWin); bringToFront(_logWin);
+}
+
+// ---- Bảng gõ tắt window: the shortcut table, with CSV import and export ------------------------------------
+// Settings: UseMacro (on), MacroVietnameseOnly (off, so shortcuts work in both languages). The table itself is
+// core::macros(), saved to macros.csv after every change. The file is the same CSV the import and export use.
+enum { M_ON = 600, M_VI, M_LIST, M_KEY, M_TEXT, M_SAVE, M_DEL, M_IMPORT, M_EXPORT, M_STATUS, M_HINT };
+static HWND _macWin, _macList, _macKey, _macText;
+static std::vector<macro::Entry> _macRows;   // the list as shown, sorted by shortcut
+static const int MW = 560, MH = 520, MP = 20;
+
+static std::wstring crlf(const std::wstring& s) { std::wstring o; for (wchar_t c : s) { if (c == L'\n') o += L"\r\n"; else if (c != L'\r') o += c; } return o; }
+static std::wstring lf(const std::wstring& s) { std::wstring o; for (wchar_t c : s) if (c != L'\r') o += c; return o; }
+static std::wstring oneLine(const std::wstring& s) { std::wstring o; for (wchar_t c : s) { if (c == L'\n') o += L" ↵ "; else if (c != L'\r') o += c; } return o; }
+static std::wstring editText(HWND e) { int n = GetWindowTextLengthW(e); std::wstring t(n > 0 ? n : 0, 0); if (n > 0) GetWindowTextW(e, &t[0], n + 1); return t; }
+static std::wstring trimSpaces(const std::wstring& s) { size_t a = s.find_first_not_of(L" \t"); if (a == std::wstring::npos) return L""; return s.substr(a, s.find_last_not_of(L" \t") - a + 1); }
+static void macStatus(const std::wstring& s) { SetDlgItemTextW(_macWin, M_STATUS, s.c_str()); }
+static int macSelected() { return _macList ? ListView_GetNextItem(_macList, -1, LVNI_SELECTED) : -1; }
+
+static void refreshMacroList(const std::wstring& select = L"") {
+    _macRows = core::macros().all();
+    std::sort(_macRows.begin(), _macRows.end(), [](const macro::Entry& a, const macro::Entry& b) { return macro::fold(a.key) < macro::fold(b.key); });
+    ListView_DeleteAllItems(_macList);
+    std::wstring want = macro::fold(select); int pick = -1;
+    for (int i = 0; i < (int)_macRows.size(); i++) {
+        LVITEMW it = {}; it.mask = LVIF_TEXT; it.iItem = i; it.pszText = (LPWSTR)_macRows[i].key.c_str(); ListView_InsertItem(_macList, &it);
+        std::wstring t = oneLine(_macRows[i].text); ListView_SetItemText(_macList, i, 1, (LPWSTR)t.c_str());
+        if (!want.empty() && macro::fold(_macRows[i].key) == want) pick = i;
+    }
+    if (pick >= 0) { ListView_SetItemState(_macList, pick, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED); ListView_EnsureVisible(_macList, pick, FALSE); }
+    EnableWindow(GetDlgItem(_macWin, M_DEL), pick >= 0);
+}
+static void macSave() {
+    std::wstring key = trimSpaces(editText(_macKey)), text = lf(editText(_macText));
+    if (const wchar_t* why = macro::checkKey(key)) { macStatus(why); return; }
+    if (const wchar_t* why = macro::checkText(text)) { macStatus(why); return; }
+    bool had = core::macros().find(key) != nullptr;
+    core::macros().set(key, text);
+    if (!core::saveMacros()) { macStatus(L"Không lưu được file macros.csv."); return; }
+    refreshMacroList(key);
+    macStatus(had ? L"Đã cập nhật." : L"Đã thêm.");
+}
+static void macDelete() {
+    int i = macSelected(); if (i < 0 || i >= (int)_macRows.size()) return;
+    core::macros().remove(_macRows[i].key);
+    if (!core::saveMacros()) { macStatus(L"Không lưu được file macros.csv."); return; }
+    SetWindowTextW(_macKey, L""); SetWindowTextW(_macText, L"");
+    refreshMacroList(); macStatus(L"Đã xoá.");
+}
+static bool pickCsv(HWND owner, bool save, std::wstring& path) {
+    wchar_t buf[MAX_PATH] = {}; if (save) wcscpy_s(buf, L"kuockey-gotat.csv");
+    OPENFILENAMEW o = {}; o.lStructSize = sizeof(o); o.hwndOwner = owner;
+    o.lpstrFilter = L"CSV (*.csv)\0*.csv\0Tất cả các file\0*.*\0"; o.lpstrFile = buf; o.nMaxFile = MAX_PATH; o.lpstrDefExt = L"csv";
+    o.Flags = OFN_EXPLORER | OFN_NOCHANGEDIR | (save ? OFN_OVERWRITEPROMPT : (OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST));
+    if (!(save ? GetSaveFileNameW(&o) : GetOpenFileNameW(&o))) return false;
+    path = buf; return true;
+}
+static void macImport() {
+    std::wstring path; if (!pickCsv(_macWin, false, path)) return;
+    std::string raw; if (!macro::readFile(path, raw)) { macStatus(L"Không đọc được file."); return; }
+    int skipped = 0; std::vector<macro::Entry> rows = macro::parseCsv(raw, &skipped);
+    for (auto& e : rows) core::macros().set(e.key, e.text);   // same shortcut (ignoring case): the file wins
+    if (!rows.empty() && !core::saveMacros()) { macStatus(L"Không lưu được file macros.csv."); return; }
+    refreshMacroList();
+    std::wstring m = L"Đã nhập " + std::to_wstring(rows.size()) + L" dòng";
+    if (skipped) m += L", bỏ qua " + std::to_wstring(skipped) + L" dòng không dùng được";
+    macStatus(m + L".");
+}
+static void macExport() {
+    if (core::macros().empty()) { macStatus(L"Chưa có chữ gõ tắt nào để xuất."); return; }
+    std::wstring path; if (!pickCsv(_macWin, true, path)) return;
+    if (!macro::writeFile(path, macro::toCsv(core::macros().all(), true))) { macStatus(L"Không ghi được file."); return; }
+    macStatus(L"Đã xuất " + std::to_wstring(core::macros().size()) + L" dòng.");
+}
+static LRESULT CALLBACK macroProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
+    switch (msg) {
+    case WM_COMMAND: {
+        int id = LOWORD(wp); HWND c = (HWND)lp;
+        switch (id) {
+        case M_ON: prefs::setInt(L"UseMacro", toggleOn(c)); core::reloadSettings(); break;
+        case M_VI: prefs::setInt(L"MacroVietnameseOnly", toggleOn(c)); core::reloadSettings(); break;
+        case M_SAVE: macSave(); break;
+        case M_DEL: macDelete(); break;
+        case M_IMPORT: macImport(); break;
+        case M_EXPORT: macExport(); break;
+        }
+        return 0; }
+    case WM_NOTIFY: {
+        NMHDR* n = (NMHDR*)lp;
+        if (n->hwndFrom == _macList && n->code == LVN_ITEMCHANGED) {
+            NMLISTVIEW* v = (NMLISTVIEW*)lp;
+            if ((v->uChanged & LVIF_STATE) && (v->uNewState & LVIS_SELECTED) && v->iItem >= 0 && v->iItem < (int)_macRows.size()) {
+                SetWindowTextW(_macKey, _macRows[v->iItem].key.c_str()); SetWindowTextW(_macText, crlf(_macRows[v->iItem].text).c_str());
+                EnableWindow(GetDlgItem(h, M_DEL), TRUE); macStatus(L"");
+            }
+        }
+        return 0; }
+    case WM_CTLCOLORSTATIC: { SetBkMode((HDC)wp, TRANSPARENT); int id = GetDlgCtrlID((HWND)lp); SetTextColor((HDC)wp, id == M_STATUS ? BRAND : (id == M_HINT ? SECONDARY : TEXT)); return (LRESULT)GetStockObject(WHITE_BRUSH); }
+    case WM_CLOSE: DestroyWindow(h); return 0;
+    case WM_DESTROY: _macWin = nullptr; _macList = nullptr; _macKey = nullptr; _macText = nullptr; return 0;
+    }
+    return DefWindowProcW(h, msg, wp, lp);
+}
+void showMacros(HINSTANCE inst) {
+    _inst = inst; initLook(); registerClasses(inst);
+    if (_macWin) { bringToFront(_macWin); return; }
+    static bool reg = false;
+    if (!reg) { WNDCLASSW wc = {}; wc.lpfnWndProc = macroProc; wc.hInstance = inst; wc.lpszClassName = L"KuocKeyMacro"; wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); wc.hCursor = LoadCursor(nullptr, IDC_ARROW); wc.hIcon = LoadIconW(inst, MAKEINTRESOURCEW(IDI_APP)); RegisterClassW(&wc); reg = true; }
+    DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN;
+    RECT wr = {0, 0, MW, MH}; AdjustWindowRectEx(&wr, style, FALSE, 0);
+    _macWin = CreateWindowExW(0, L"KuocKeyMacro", L"Bảng gõ tắt", style, 0, 0, wr.right - wr.left, wr.bottom - wr.top, nullptr, nullptr, inst, nullptr);
+    auto kid = [&](const wchar_t* cls, const wchar_t* text, DWORD st, int x, int y, int w, int hh, int id, HFONT f = fBody) { return makeChild(_macWin, cls, text, st, x, y, w, hh, id, f); };
+    int tx = MW - MP - 40;   // toggles sit at the right edge
+    kid(L"STATIC", L"Bật gõ tắt", SS_LEFT | SS_NOPREFIX, MP, 18, 400, 20, 0);
+    HWND on = kid(L"KuocKeyToggle", L"", WS_TABSTOP, tx, 16, 40, 23, M_ON); setBg(on, GROUP); setToggle(on, prefs::getInt(L"UseMacro", 1) != 0);
+    kid(L"STATIC", L"Chỉ thay khi đang gõ tiếng Việt", SS_LEFT | SS_NOPREFIX, MP, 52, 400, 20, 0);
+    HWND vi = kid(L"KuocKeyToggle", L"", WS_TABSTOP, tx, 50, 40, 23, M_VI); setBg(vi, GROUP); setToggle(vi, prefs::getInt(L"MacroVietnameseOnly", 0) != 0);
+    kid(L"STATIC", L"Gõ chữ tắt rồi bấm Cách, Enter, Tab hoặc dấu câu (. , ; : ! ? ) \") để đổi thành đoạn chữ dài. Không phân biệt hoa thường. Bấm Xoá ngay sau đó để hoàn tác. Khi gõ tiếng Việt, chữ tắt là chữ hiện trên màn hình (đc gõ là ddc).",
+        SS_LEFT | SS_NOPREFIX, MP, 86, MW - 2 * MP, 54, M_HINT, fSmall);
+    _macList = kid(WC_LISTVIEWW, L"", LVS_REPORT | LVS_NOSORTHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP, MP, 146, MW - 2 * MP, 190, M_LIST);
+    ListView_SetExtendedListViewStyle(_macList, LVS_EX_FULLROWSELECT);
+    { const wchar_t* heads[] = {L"Gõ tắt", L"Thay bằng"}; int widths[] = {140, MW - 2 * MP - 140 - GetSystemMetrics(SM_CXVSCROLL) - 4};
+      for (int i = 0; i < 2; i++) { LVCOLUMNW c = {}; c.mask = LVCF_TEXT | LVCF_WIDTH; c.pszText = (LPWSTR)heads[i]; c.cx = widths[i]; ListView_InsertColumn(_macList, i, &c); } }
+    kid(L"STATIC", L"Gõ tắt", SS_LEFT | SS_NOPREFIX, MP, 346, 150, 18, 0, fSmall);
+    kid(L"STATIC", L"Thay bằng", SS_LEFT | SS_NOPREFIX, MP + 172, 346, 200, 18, 0, fSmall);
+    _macKey = kid(L"EDIT", L"", WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, MP, 366, 160, 28, M_KEY);
+    _macText = kid(L"EDIT", L"", WS_BORDER | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN, MP + 172, 366, MW - 2 * MP - 172, 64, M_TEXT);
+    SendMessageW(_macKey, EM_SETLIMITTEXT, macro::MAX_KEY, 0); SendMessageW(_macText, EM_SETLIMITTEXT, macro::MAX_TEXT * 2, 0);
+    SendMessageW(_macKey, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(6, 6)); SendMessageW(_macText, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(6, 6));
+    auto button = [&](const wchar_t* text, bool prominent, int x, int w, int id) { HWND b = kid(L"KuocKeyButton", text, WS_TABSTOP, x, 446, w, 30, id); SetWindowLongPtrW(b, GWLP_USERDATA, prominent); setBg(b, GROUP); return b; };
+    button(L"Thêm / Cập nhật", true, MP, 130, M_SAVE); button(L"Xoá", false, MP + 138, 70, M_DEL);
+    button(L"Xuất CSV…", false, MW - MP - 110, 110, M_EXPORT); button(L"Nhập CSV…", false, MW - MP - 110 - 8 - 110, 110, M_IMPORT);
+    kid(L"STATIC", L"", SS_LEFT | SS_NOPREFIX, MP, 488, MW - 2 * MP, 20, M_STATUS, fSmall);
+    refreshMacroList();
+    centerOnMouseScreen(_macWin); bringToFront(_macWin);
 }
 
 }} // namespace

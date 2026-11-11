@@ -35,7 +35,7 @@
 | Website demo frames, release pipeline, notarized DMG | `release.sh` gains a Windows lane: CI builds ARM64 + x64, signs (if cert), uploads `KuocKey-Setup.exe` + `.zip` | |
 | iOS keyboard, fat-finger, auto-correct strip | out of scope (mobile only) | |
 
-Explicit non-goals: VNI, code tables, macros (already cut on macOS).
+Explicit non-goals: VNI, code tables. (Macros were a non-goal too; Bảng gõ tắt was added in D61.)
 
 ## 2. Architecture
 

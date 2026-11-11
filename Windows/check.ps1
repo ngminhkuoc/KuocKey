@@ -11,6 +11,7 @@ cmake --build "$root/Windows/build" --config Release
 if ($LASTEXITCODE) { exit 1 }
 $rc = 0
 if (-not $env:TMPDIR) { $env:TMPDIR = $env:TEMP }
+& "$root/Windows/build/App/kuockey_macrotest.exe"; if ($LASTEXITCODE) { $rc = 1 }   # shortcut table (Bảng gõ tắt)
 python "$as/rules/run_rules.py"; if ($LASTEXITCODE) { $rc = 1 }
 $mode = if ($args.Count -gt 0) { $args[0] } else { 'check' }
 python "$as/rules/golden.py" $mode; if ($LASTEXITCODE) { $rc = 1 }

@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <string>
 #include <functional>
+#include "Macro.h"
 
 namespace kuockey { namespace core {
 
@@ -31,6 +32,12 @@ void setEmojiPickerOpen(bool open, HWND picker);
 void resetTyping();
 /// Types text into the focused app (KEYEVENTF_UNICODE; surrogate pairs for astral emoji).
 void insertText(const std::wstring& text);
+
+// Bảng gõ tắt (Macro.h): the shortcut table, kept in %LOCALAPPDATA%\KuocKey\macros.csv and loaded when the core starts.
+// The hook and the settings window share one thread, so editing the table needs no lock; call saveMacros() after.
+// Settings: UseMacro (on by default), MacroVietnameseOnly (off: shortcuts expand in both languages).
+macro::Table& macros();
+bool saveMacros();
 
 // Typing log
 std::wstring typingLogPath();

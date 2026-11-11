@@ -5,6 +5,23 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 61. Bảng gõ tắt (shortcut table), Windows
+
+**Status:** Agreed 2026-11-11 (the owner's request); built on Windows only, not yet run on a machine (see below).
+
+**Asked.** "Replace my short text with longer text, like text replacement on iOS", with the list imported and exported as plain CSV, one pair per line. This reverses the old "gõ tắt: remove" cut; the engine's macro code stays gone, the feature lives in the Windows layer (`Windows/App/Macro.*`, `Core.cpp`).
+
+**Decided.**
+- A shortcut expands when the word is ended by Space, Enter, Tab or . , ; : ! ? ) ". The key is typed after the text. Matching ignores case and Unicode composition, and works on what is on screen, so in Vietnamese mode the shortcut "đc" is typed "ddc".
+- On in both languages by default. "Chỉ thay khi đang gõ tiếng Việt" (`MacroVietnameseOnly`) limits it to Vietnamese mode. "Bật gõ tắt" (`UseMacro`) turns it off.
+- Backspace right after an expansion puts the shortcut back (the auto-fix undo path; not after Enter or Tab).
+- Never in KuocKey's own windows, password fields, or with Ctrl/Alt/Win held.
+- A shortcut is 1 to 30 characters with no space or . , ; : ! ? ) ". The text is up to 1000 characters; a line break in it is sent as Enter.
+- Stored as `%LOCALAPPDATA%\KuocKey\macros.csv`, the same CSV the import and export use: RFC 4180 (quote a field with a comma, quote or line break; double the quote), UTF-8, no BOM in the store and a BOM in exports so Excel reads Vietnamese. Import merges into the table (the file wins on the same shortcut) and reports how many lines it skipped.
+- Opened from the main window ("Bảng gõ tắt", Mở…) or the tray menu.
+
+**Tests.** `Windows/Tests/macrotest.cpp` (lookup, validation, CSV round trip), run by `Windows/check.ps1`. Typing behaviour in the hook has no live test case yet.
+
 ## 60. No network connections
 
 **Status:** Agreed 2026-11-04 (offline fork).
