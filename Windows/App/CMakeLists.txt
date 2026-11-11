@@ -25,4 +25,7 @@ target_compile_definitions(kuockey_livetest PRIVATE UNICODE _UNICODE)
 add_executable(kuockey_macrotest ../Tests/macrotest.cpp Macro.cpp)
 target_include_directories(kuockey_macrotest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_definitions(kuockey_macrotest PRIVATE UNICODE _UNICODE)
+if(MSVC)
+  target_compile_options(kuockey_macrotest PRIVATE /utf-8)   # the test and Macro.cpp hold Vietnamese text
+endif()
 target_link_libraries(kuockey_macrotest PRIVATE user32 normaliz)
