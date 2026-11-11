@@ -53,7 +53,7 @@ static HWINEVENTHOOK _focusHook = nullptr, _fgHook = nullptr;
 static vKeyHookState* pData = nullptr;
 static unsigned _flag = 0, _lastFlag = 0;
 static Uint16 _keycode = 0;
-static DWORD _keyVk = 0, _keyExtended = 0;   // the key as Windows sent it: re-sent as is after a restore (Home, numpad 1...)
+static DWORD _keyVk = 0, _keyExtended = 0, _keyScan = 0;   // the key as Windows sent it: re-sent as is after a restore (Home, numpad 1...)
 static bool _hasJustUsedHotKey = false;
 static std::function<void(int)> _observer;
 static std::wstring _frontApp = L"UnknownApp";   // exe name of the app in front
@@ -77,6 +77,7 @@ static int _enPrevN = 0;
 static bool _enPrevRestored = false;   // _enPrevKeys[0] was put back to English by auto switch (D35)
 
 struct AutoFixUndo {
+    bool fromMacro;   // a shortcut expansion (Bảng gõ tắt) rather than an auto switch: not counted in the typing log
     bool active; int removeCount; wchar_t text[MAX_BUFF + 1]; int textCount; int language;
     Uint32 keys[MAX_BUFF]; int keyCount;   // the keys of the original word (English mode can go on typing it after an undo, D32)
 };
@@ -85,8 +86,18 @@ static AutoFixUndo _autoFixUndo = {};
 static Uint32 _undoneKeys[MAX_BUFF];
 static int _undoneCount = 0;
 
+// ---- Bảng gõ tắt (shortcut table) state: what is on screen of the word being typed ---------------------
+static macro::Table _macros;
+static int vMacroOn = 1, vMacroVietnameseOnly = 0;   // UseMacro, MacroVietnameseOnly
+static std::wstring _mcWord;      // the characters on screen since the word began (as typed, not folded)
+static bool _mcOver = false;      // the word grew past macro::MAX_KEY, so _mcWord is incomplete and can't match
+static bool _mcLive = false;      // gõ tắt is following the key being handled now
+static bool _mcTrig = false;      // ... and that key ends a word (Space, Enter, Tab, . , ; : ! ? ) ")
+static wchar_t _mcCh = 0;         // the character that key types (0: none)
+static void MacroReset() { _mcWord.clear(); _mcOver = false; }
+
 static void StartEnglishWord(bool valid) { _enCount = 0; _enValid = valid; _enAfterShortcut = false; }
-static void ResetEnglishWord(bool valid) { _enAfterDouble = false; _undoneCount = 0; StartEnglishWord(valid); _enPrevN = 0; vAutoSwitchForget(); }
+static void ResetEnglishWord(bool valid) { _enAfterDouble = false; _undoneCount = 0; StartEnglishWord(valid); _enPrevN = 0; vAutoSwitchForget(); MacroReset(); }
 
 // ---- Typing log ------------------------------------------------------------------------
 int vTypingLogKeys = 1, vTypingLogEnabled = 0;
@@ -279,6 +290,8 @@ void reloadSettings() {
     vAutoSwitchByTyping = AutoSwitchPaused() ? 0 : prefs::getInt(L"AutoSwitchByTyping", 1);
     vTypingLogKeys = prefs::getInt(L"TypingLogKeys", 1);
     vTypingLogEnabled = prefs::getInt(L"TypingLogEnabled", 0);
+    vMacroOn = prefs::getInt(L"UseMacro", 1);
+    vMacroVietnameseOnly = prefs::getInt(L"MacroVietnameseOnly", 0);
     int hotkey = prefs::getInt(L"SwitchKeyStatus", 0);
     vSwitchKeyStatus = hotkey ? hotkey : 0x7A000206;   // default Alt+Z (same bits as ⌥Z on macOS)
     vEmojiHotkey = prefs::getInt(L"EmojiPicker", 0) ? prefs::getInt(L"EmojiHotkey", 0) : 0;
@@ -382,7 +395,7 @@ static bool IsLetterKey(Uint16 key) { for (Uint16 k : {KEY_A,KEY_B,KEY_C,KEY_D,K
 static wchar_t CharacterOf(Uint32 data) { return (data & CHAR_CODE_MASK) ? (wchar_t)(data & 0xFFFF) : (wchar_t)keyCodeToCharacter(data); }
 
 static void RememberAutoFix(int correctedCount) {
-    _autoFixUndo.active = false;
+    _autoFixUndo.active = false; _autoFixUndo.fromMacro = false;
     if (vAutoSwitchUndoCount <= 0 || correctedCount <= 0) return;
     for (int x = 0; x < vAutoSwitchUndoCount; x++) if ((vAutoSwitchUndoData[x] & 0xFFFF) == KEY_SPACE && !(vAutoSwitchUndoData[x] & CHAR_CODE_MASK)) return;
     Uint16 breakChar = keyCodeToCharacter(_keycode | ((_flag & F_SHIFT) || ((_flag & F_CAPS) && IsLetterKey(_keycode)) ? CAPS_MASK : 0));   // Caps Lock shifts letters only (Space + CAPS_MASK is 0)
@@ -405,7 +418,7 @@ static bool UndoAutoFixWithBackspace() {
     batchBackspaces(removeCount);
     batchText(_autoFixUndo.text, _autoFixUndo.textCount);
     flushBatch();
-    TLUndo();
+    if (!_autoFixUndo.fromMacro) TLUndo();
     if (vLanguage != _autoFixUndo.language) { vLanguage = _autoFixUndo.language; VKLanguageChanged(true); }
     startNewSession();
     ResetEnglishWord(false);   // the cursor is at the end of a word we didn't see typed
@@ -498,6 +511,110 @@ static bool HandleEnglishKeyForAutoSwitch() {
     return true;
 }
 
+// ---- Bảng gõ tắt (shortcut table) ---------------------------------------------------------------
+// Like iOS text replacement: type a shortcut, then Space, Enter, Tab or . , ; : ! ? ) " and it is replaced by the longer
+// text; the key itself is typed after it. It matches what is on screen, so in Vietnamese mode a shortcut is the Telex
+// result ("đc" is typed "ddc"). _mcWord follows the word: in English from the keys, in Vietnamese from the engine's
+// output (MacroAfterEngine). Backspace right after an expansion puts the shortcut back (the auto-fix undo).
+macro::Table& macros() { return _macros; }
+static std::wstring macrosPath() { return prefs::appDataDir() + L"\\macros.csv"; }
+bool saveMacros() { return macro::saveFile(macrosPath(), _macros); }
+
+static bool OwnWindowInFront() {   // our own windows (the shortcut editor, file dialogs): typing there is never expanded
+    DWORD pid = 0; GetWindowThreadProcessId(GetForegroundWindow(), &pid);
+    return pid == GetCurrentProcessId();
+}
+static bool MacroActive() {
+    if (!vMacroOn || _macros.empty()) return false;
+    if (vMacroVietnameseOnly && vLanguage == 0) return false;
+    if (vOtherLanguage && _otherInputLanguage) return false;
+    return !OwnWindowInFront();
+}
+/// The character the key in _keyVk types with the modifiers held, in the layout of the app in front (0: none, or a dead key).
+static wchar_t MacroTypedChar() {
+    if (_keycode == KEY_SPACE) return L' ';
+    if (_keycode == KEY_RETURN || _keycode == KEY_ENTER || _keycode == KEY_TAB || _keycode == KEY_DELETE || _keycode == KEY_ESC) return 0;
+    BYTE st[256] = {};
+    if (_flag & F_SHIFT) st[VK_SHIFT] = 0x80;
+    if (_flag & F_CAPS) st[VK_CAPITAL] = 0x01;
+    if (GetKeyState(VK_NUMLOCK) & 1) st[VK_NUMLOCK] = 0x01;
+    HKL hkl = GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), nullptr));
+    wchar_t b[8] = {};
+    int n = ToUnicodeEx((UINT)_keyVk, (UINT)_keyScan, st, b, 8, 0x4, hkl);   // 0x4: leave dead-key state alone
+    return n == 1 ? b[0] : 0;
+}
+static void MacroType(wchar_t c) {
+    if (c == 0) return;
+    if (c == L'(' || c == L'{' || c == L'<') { MacroReset(); return; }   // a word begins after an opening bracket
+    if (_mcWord.size() < macro::MAX_KEY) _mcWord += c; else _mcOver = true;
+}
+/// Replaces the shortcut on screen with its text, then types the key that ended it.
+static bool MacroExpand(const macro::Entry& e) {
+    int shortcut = (int)_mcWord.size();
+    if (shortcut <= 0 || shortcut > (int)macro::MAX_KEY) return false;
+    std::wstring typedShortcut = _mcWord;
+    int erase = shortcut;
+    if (vFixRecommendBrowser && erase < MAX_BUFF - 1) { wchar_t x = 0x202F; batchText(&x, 1); erase++; }   // as SendEngineOutput: defeats address-bar autocomplete
+    batchBackspaces(erase);
+    int typed = 0;   // characters the text leaves on screen
+    for (wchar_t c : e.text) {
+        if (c == L'\r') continue;
+        if (c == L'\n') batchKey(VK_RETURN); else batchText(&c, 1);
+        if (!(c >= 0xDC00 && c <= 0xDFFF)) typed++;   // the second half of a surrogate pair is no new character
+    }
+    WORD vk = _keyVk ? (WORD)_keyVk : vkOf(_keycode);
+    if (vk) batchKey(vk, _keyExtended);   // the key as the user pressed it (Shift is still held, so ? stays ?)
+    flushBatch();
+    ResetEnglishWord(true); startNewSession();
+    // Backspace next puts the shortcut and the key back; not after Enter or Tab, which may have sent a message or left the field
+    if (typed > 0 && _mcCh && !(IsWhitespaceKey(_keycode) && _keycode != KEY_SPACE)) {
+        _autoFixUndo.active = true; _autoFixUndo.fromMacro = true; _autoFixUndo.language = vLanguage;
+        _autoFixUndo.removeCount = typed + 1; _autoFixUndo.keyCount = 0;
+        int n = 0;
+        for (wchar_t c : typedShortcut) if (n < MAX_BUFF) _autoFixUndo.text[n++] = c;
+        _autoFixUndo.text[n++] = _mcCh;
+        _autoFixUndo.textCount = n;
+    }
+    return true;
+}
+/// Before the key reaches the language handling. Returns true when it expanded a shortcut (the key is consumed).
+static bool MacroBeforeKey() {
+    _mcTrig = false; _mcCh = 0;
+    _mcLive = MacroActive();
+    if (!_mcLive) { MacroReset(); return false; }
+    if (OTHER_CONTROL_KEY) { MacroReset(); _mcLive = false; return false; }
+    _mcCh = MacroTypedChar();
+    _mcTrig = IsWhitespaceKey(_keycode) || (_mcCh && wcschr(L".,;:!?)\"", _mcCh));
+    if (_mcTrig) {
+        const macro::Entry* e = (!_mcOver && !_mcWord.empty()) ? _macros.find(_mcWord) : nullptr;
+        bool done = e && MacroExpand(*e);
+        MacroReset();
+        return done;
+    }
+    if (_keycode == KEY_DELETE) { if (vLanguage == 0 && !_mcWord.empty()) _mcWord.pop_back(); return false; }
+    if (vLanguage == 0) { if (_mcCh) MacroType(_mcCh); else MacroReset(); }   // English: what is typed is what is on screen
+    else if (!_mcCh) MacroReset();                                          // Vietnamese: followed from the engine's output
+    return false;
+}
+/// Vietnamese mode, right after the engine ran for a key, before its output is sent (that changes backspaceCount).
+static void MacroAfterEngine() {
+    if (!_mcLive || _mcTrig) return;   // a word-ending key: MacroBeforeKey already started a new word
+    switch (pData->code) {
+    case vDoNothing:   // the key goes through as typed
+        if (_keycode == KEY_DELETE) { if (!_mcWord.empty()) _mcWord.pop_back(); }
+        else MacroType(_mcCh);
+        break;
+    case vWillProcess: case vRestore: case vRestoreAndStartNewSession: {   // backspaces, then the new characters (batchEngineChars)
+        int back = pData->backspaceCount;
+        if (back > (int)_mcWord.size()) { MacroReset(); _mcOver = true; break; }   // it reaches back past what we saw
+        _mcWord.resize(_mcWord.size() - back);
+        for (int k = pData->newCharCount - 1; k >= 0; k--) MacroType(CharacterOf(pData->charData[k]));
+        if (pData->code == vRestore) MacroType(_mcCh);   // a restore also types the key that triggered it
+        break; }
+    default: MacroReset(); break;
+    }
+}
+
 // ---- Hooks --------------------------------------------------------------------------------
 static bool modifierVk(DWORD vk, bool down) {
     unsigned bit = 0;
@@ -533,7 +650,7 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam) {
     if (!down) return CallNextHookEx(_kbHook, nCode, wParam, lParam);
 
     _keycode = engineKey(k->vkCode);
-    _keyVk = k->vkCode; _keyExtended = (k->flags & LLKHF_EXTENDED) ? KEYEVENTF_EXTENDEDKEY : 0;
+    _keyVk = k->vkCode; _keyScan = k->scanCode; _keyExtended = (k->flags & LLKHF_EXTENDED) ? KEYEVENTF_EXTENDEDKEY : 0;
     // emoji picker hotkey (opens and closes it): a key with exactly these modifiers
     if (vEmojiHotkey && GET_SWITCH_KEY(vEmojiHotkey) == _keycode &&
         HAS_CONTROL(vEmojiHotkey) == GET_BOOL(_flag & F_CONTROL) && HAS_OPTION(vEmojiHotkey) == GET_BOOL(_flag & F_ALT) &&
@@ -569,6 +686,7 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam) {
     TLNoteKey(_keycode, _flag);
 
     updateOtherInputLanguage();   // every key: Win+Space can switch to a Japanese/Chinese IME in the same window
+    if (MacroBeforeKey()) return 1;   // Bảng gõ tắt: a shortcut was replaced by its text
     if (vLanguage == 0) {
         if (vAutoSwitchByTyping && HandleEnglishKeyForAutoSwitch()) return 1;
         return CallNextHookEx(_kbHook, nCode, wParam, lParam);
@@ -578,6 +696,7 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam) {
     vAutoSwitchRequest = -1;
     vKeyHandleEvent(vKeyEvent::Keyboard, vKeyEventState::KeyDown, _keycode,
                     (_flag & F_SHIFT) ? 1 : ((_flag & F_CAPS) ? 2 : 0), OTHER_CONTROL_KEY);
+    MacroAfterEngine();   // follow the word on screen (before the output is sent: that changes backspaceCount)
     if (pData->code == vDoNothing) return CallNextHookEx(_kbHook, nCode, wParam, lParam);
     if (pData->code == vWillProcess || pData->code == vRestore || pData->code == vRestoreAndStartNewSession) {
         bool autoSwitchAtBreak = vAutoSwitchRequest == 0 && !IsLetterKey(_keycode);
@@ -594,7 +713,7 @@ static LRESULT CALLBACK mouseHook(int nCode, WPARAM wParam, LPARAM lParam) {
             RECT r; GetWindowRect(vEmojiWindow, &r); POINT p = ((MSLLHOOKSTRUCT*)lParam)->pt;
             if (!PtInRect(&r, p)) PostMessageW(vEmojiWindow, WM_APP + 11, 0, 0);
         }
-        _autoFixUndo.active = false; TLNoteClick();
+        _autoFixUndo.active = false; TLNoteClick(); MacroReset();
         if (vLanguage == 0) ResetEnglishWord(true);
         else vKeyHandleEvent(vKeyEvent::Mouse, vKeyEventState::MouseDown, 0);
     }
@@ -607,6 +726,7 @@ bool start() {
     if (_kbHook) return true;
     pData = (vKeyHookState*)vKeyInit();
     reloadSettings();
+    macro::loadFile(macrosPath(), _macros);   // none yet is fine: the table starts empty
     std::vector<BYTE> data = prefs::getBinary(L"smartSwitchKey");
     initSmartSwitchKey(data.data(), (int)data.size());
     queryFrontMostApp(); _tlApp = _frontApp;
